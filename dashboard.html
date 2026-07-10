@@ -82,7 +82,7 @@
                     </div>
                     <div class="widget">
                         <h2>CURRENT ACCOUNTS</h2>
-                        <p id="current-accounts">0</p>   
+                        <p id="current-accounts">0</p>
                     </div>
                     <div class="widget">
                         <h2>SAVINGS ACCOUNTS</h2>
@@ -169,20 +169,115 @@
                         </tr>
                     </thead>
                     <tbody id="employee-table-body">
-                        <tr>
-                            <td>EMP001</td>
-                            <td>John Doe</td>
-                            <td>john.doe@example.com</td>
-                            <td>123-456-7890</td>
-                            <td>2023-01-01</td>
-                            <td>
-                                <button class="view-btn">View</button>
-                                <button class="edit-btn">Edit</button>
-                                <button class="delete-btn">Delete</button>
-                            </td>
-                        </tr>
                     </tbody>
                 </table>
+            </div>
+            <div class="modal" id="employee-view-modal">
+
+                <div class="modal-content">
+                    <button class="close" id="employee-view-close" onclick="closeViewModal()"><i class="fas fa-times"></i></button>
+                    <h2>Employee Details</h2>
+                    <div class="modal-body">
+                        <div class="categories">
+                            <p><strong>Employee ID:</strong></p>
+                            <p><strong>First Name:</strong></p>
+                            <p><strong>Last Name:</strong></p>
+                            <p><strong>Gender:</strong></p>
+                            <p><strong>Date of Birth:</strong></p>
+                            <p><strong>Marital Status:</strong></p>
+                            <p><strong>Email:</strong></p>
+                            <p><strong>Contact Number:</strong></p>
+                            <p><strong>Address:</strong></p>
+                            <p><strong>City:</strong></p>
+                            <p><strong>Postal Code:</strong></p>
+                            <p><strong>Educational Attainment:</strong></p>
+                            <p><strong>Work Experience:</strong></p>
+                            <p><strong>Job Title:</strong></p>
+                            <p><strong>Employee Type:</strong></p>
+                            <p><strong>Date Hired:</strong></p>
+                            <p><strong>Date Updated:</strong></p>
+                        </div>
+                        <div class="information">
+                            <p><span id="ve-id">ID</span></p>
+                            <p><span id="ve-fname">FN</span></p>
+                            <p><span id="ve-lname">LN</span></p>
+                            <p><span id="ve-gender">G</span></p>
+                            <p><span id="ve-birth">DOB</span></p>
+                            <p><span id="ve-marital">MS</span></p>
+                            <p><span id="ve-email">Email</span></p>
+                            <p><span id="ve-contact">Contact</span></p>
+                            <p><span id="ve-address">Address</span></p>
+                            <p><span id="ve-city">City</span></p>
+                            <p><span id="ve-postal">Postal</span></p>
+                            <p><span id="ve-education">Education</span></p>
+                            <p><span id="ve-experience">Experience</span></p>
+                            <p><span id="ve-title">Title</span></p>
+                            <p><span id="ve-type">Type</span></p>
+                            <p><span id="ve-hire-date">Hire Date</span></p>
+                            <p><span id="ve-date-updated">Date Updated</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal" id="employee-edit-modal">
+                <div class="modal-content">
+                    <button class="close" id="employee-edit-close" onclick="closeEditModal()"><i class="fas fa-times"></i></button>
+                    <h2>Employee Details</h2>
+                    <div class="modal-body">
+                        <div class="edit-form">
+                            <label for="ved-id"><strong>Employee ID:</strong></label>
+                            <input type="text" id="ved-id" value="ID" readonly>
+                            <label for="ved-fname"><strong>First Name:</strong></label>
+                            <input type="text" id="ved-fname" value="First Name" readonly>
+                            <label for="ved-lname"><strong>Last Name:</strong></label>
+                            <input type="text" id="ved-lname" value="Last Name" readonly>
+                            <label for="ved-gender"><strong>Gender:</strong></label>
+                            <input type="text" id="ved-gender" value="Gender" readonly>
+                            <label for="ved-birth"><strong>Date of Birth:</strong></label>
+                            <input type="text" id="ved-birth" value="Date of Birth" readonly>
+                            <label for="ved-marital"><strong>Marital Status:</strong></label>
+                            <select id="ved-marital" value="Marital Status" required>
+                                <option value="Single">Single</option>
+                                <option value="Married">Married</option>
+                                <option value="Divorced">Divorced</option>
+                                <option value="Widowed">Widowed</option>
+                            </select>
+                            <label for="ved-email"><strong>Email:</strong></label>
+                            <input type="text" id="ved-email" value="Email" required>
+                            <label for="ved-contact"><strong>Contact Number:</strong></label>
+                            <input type="text" id="ved-contact" value="Contact Number" required>
+                            <label for="ved-address"><strong>Address:</strong></label>
+                            <input type="text" id="ved-address" value="Address" required>
+                            <label for="ved-city"><strong>City:</strong></label>
+                            <input type="text" id="ved-city" value="City" required>
+                            <label for="ved-postal"><strong>Postal Code:</strong></label>
+                            <input type="text" id="ved-postal" value="Postal Code" required>
+                            <label for="ved-education"><strong>Educational Attainment:</strong></label>
+                            <input type="text" id="ved-education" value="Educational Attainment" required>
+                            <label for="ved-experience"><strong>Work Experience:</strong></label>
+                            <input type="text" id="ved-experience" value="Work Experience" required>
+                            <label for="ved-title"><strong>Job Title:</strong></label>
+                            <input type="text" id="ved-title" value="Job Title" required>
+                            <label for="ved-type"><strong>Employee Type:</strong></label>
+                            <input type="text" id="ved-type" value="Employee Type" required>
+                            <label for="ved-hire-date"><strong>Date Hired:</strong></label>
+                            <input type="text" id="ved-hire-date" value="Date Hired" required>
+                            <label for="ved-date-created"><strong>Date Created:</strong></label>
+                            <input type="text" id="ved-date-created" value="Date Created" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal" id="employee-delete-modal">
+                <div class="modal-content">
+                    <button class="close" id="employee-delete-close" onclick="closeDeleteModal()"><i class="fas fa-times"></i></button>
+                    <h2>Are you sure you want to delete this employee?</h2>
+                    <p class="modal-message">This action cannot be undone.</p>
+                    <div class="modal-actions">
+                        <button class="cancel-btn" id="employee-delete-cancel" onclick="closeDeleteModal()">Cancel</button>
+                        <button class="delete-btn" id="employee-delete-confirm" onclick="confirmDeleteEmployee()">Delete</button>
+                    </div>
+                </div>
             </div>
             <div class="pagination-container">
                 <button id="emp-btn-prev" onclick="prevPage()"><i class="fas fa-chevron-left"></i></button>
@@ -240,8 +335,8 @@
                         </div>
                         <div class="form-group">
                             <label for="employee-contact">Contact Number</label>
-                            <input type="text" pattern "^09[0-9]{9}$" id="employee-contact" name="employee-contact" placeholder="09XXXXXXXXX"
-                                required>
+                            <input type="text" pattern "^09[0-9]{9}$" id="employee-contact" name="employee-contact"
+                                placeholder="09XXXXXXXXX" required>
                         </div>
                     </div>
                     <div class="address">
@@ -420,7 +515,8 @@
                         </div>
                         <div class="form-group">
                             <label for="account-contact">Contact Number</label>
-                            <input type="text" id="account-contact" name="account-contact" placeholder="09XXXXXXXXX" required>
+                            <input type="text" id="account-contact" name="account-contact" placeholder="09XXXXXXXXX"
+                                required>
                         </div>
                     </div>
                     <div class="address">
@@ -690,8 +786,7 @@
                 </div>
                 <div class="transfer-total">
                     <h1>Transfer Fee: <span id="transfer-fee">$0.00</span></h1>
-                    <h1>Total Transfer Amount: <span
-                            id="transfer-total">$0.00</span></h1>
+                    <h1>Total Transfer Amount: <span id="transfer-total">$0.00</span></h1>
                     <div class="transfer-actions">
                         <button type="button" id="transfer-btn">Transfer</button>
                     </div>

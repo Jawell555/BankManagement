@@ -1,24 +1,24 @@
-import {supabase as sb} from '../config/app.js';
+import { supabase as sb } from '../config/app.js';
 import { getNumberIDFromString } from './dashboardServices.js';
 function accountIDFormat(id) {
-    const idStr = id.toString();
-    const prefix = 'ACC' + (idStr.length < 6 ? '0'.repeat(6 - idStr.length) : '');
-    return prefix + idStr;
+  const idStr = id.toString();
+  const prefix = 'ACC' + (idStr.length < 6 ? '0'.repeat(6 - idStr.length) : '');
+  return prefix + idStr;
 }
 
 export async function getAccountType(typeId) {
-    const { data, error } = await sb
-        .from("account_type")
-        .select("acctype_desc")
-        .eq("id", typeId)
-        .limit(1)
-        .maybeSingle();
+  const { data, error } = await sb
+    .from("account_type")
+    .select("acctype_desc")
+    .eq("id", typeId)
+    .limit(1)
+    .maybeSingle();
 
-    if (error) {
-        console.error("getAccountType:", error.message);
-        return null;
-    }
-    return data?.acctype_desc ?? null;
+  if (error) {
+    console.error("getAccountType:", error.message);
+    return null;
+  }
+  return data?.acctype_desc ?? null;
 };
 
 //View Account
@@ -35,26 +35,26 @@ export function getAccNumberIDFromString(str) {
 }
 
 export async function getAccountsTable() {
-    const tbody = document.getElementById("account-table-body");
-        if (!tbody) return;
-    
-        const { data, error } = await sb
-            .from("accounts")
-            .select("id, f_name, l_name, email, contact_no, acc_type, created_at")
-            .order("created_at", { ascending: false });
-    
-        if (error) {
-            console.error("getAllAccountsTable:", error.message);
-            return;
-        }
-    
-        tbody.innerHTML = "";
-    
-        for (const acc of (data ?? [])) {
-            const accType = await getAccountType(acc.acc_type);
-    
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
+  const tbody = document.getElementById("account-table-body");
+  if (!tbody) return;
+
+  const { data, error } = await sb
+    .from("accounts")
+    .select("id, f_name, l_name, email, contact_no, acc_type, created_at")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("getAllAccountsTable:", error.message);
+    return;
+  }
+
+  tbody.innerHTML = "";
+
+  for (const acc of (data ?? [])) {
+    const accType = await getAccountType(acc.acc_type);
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
           <td>${accountIDFormat(acc.id) ?? ""}</td>
           <td>${acc.f_name ?? ""} ${acc.l_name ?? ""}</td>
           <td>${acc.email ?? ""}</td>
@@ -67,8 +67,8 @@ export async function getAccountsTable() {
             <button class="delete-btn">Delete</button>
           </td>
         `;
-            tbody.appendChild(tr);
-        }
+    tbody.appendChild(tr);
+  }
 }
 
 export async function accountsFilter(acc, type) {
@@ -77,7 +77,7 @@ export async function accountsFilter(acc, type) {
 
   const keyword = (acc ?? "").trim();
   const typeNum = await getAccountTypeId(type);
-  
+
   let query = sb
     .from("accounts_with_full_name")
     .select("id, f_name, l_name, email, contact_no, acc_type, created_at")
@@ -135,66 +135,82 @@ export async function accountsFilter(acc, type) {
 
 //Add Account
 export async function generateAccountID() {
-    const { data, error } = await sb
+  const { data, error } = await sb
     .from("accounts")
     .select("id")
     .order("id", { descending: true })
     .limit(1)
     .maybeSingle();
 
-    if (error) {
-        console.error("generateAccountID:", error.message);
-        return null;
-    }
+  if (error) {
+    console.error("generateAccountID:", error.message);
+    return null;
+  }
 
-    const lastID = data?.id ?? 0;
-    return `ACC${(lastID + 1).toString().padStart(6, "0")}`;
+  const lastID = data?.id ?? 0;
+  return `ACC${(lastID + 1).toString().padStart(6, "0")}`;
 }
 
 export async function getAccountTypeId(typeName) {
-    const { data, error } = await sb
-        .from("account_type")
-        .select("id")
-        .ilike("acctype_desc", typeName)
-        .limit(1)
-        .maybeSingle();
+  const { data, error } = await sb
+    .from("account_type")
+    .select("id")
+    .ilike("acctype_desc", typeName)
+    .limit(1)
+    .maybeSingle();
 
-    if (error) {
-        console.error("getAccountTypeId:", error.message);
-        return 0;
-    }
+  if (error) {
+    console.error("getAccountTypeId:", error.message);
+    return 0;
+  }
 
-    return data?.id ?? 0;
+  return data?.id ?? 0;
 }
 
 export async function getPresentedIDTypeID(ID_desc) {
-    const { data, error } = await sb
-        .from("presented_id")
-        .select("id")
-        .ilike("id_desc", ID_desc)
-        .limit(1)
-        .maybeSingle();
+  const { data, error } = await sb
+    .from("presented_id")
+    .select("id")
+    .ilike("id_desc", ID_desc)
+    .limit(1)
+    .maybeSingle();
 
-    if (error) {
-        console.error("getPresentedIDTypeID:", error.message);
-        return null;
-    }
+  if (error) {
+    console.error("getPresentedIDTypeID:", error.message);
+    return null;
+  }
 
-    return data?.id ?? null;
+  return data?.id ?? null;
 }
 
-import { getGenderID, getMaritalStatusID } from './dashboardServices.js';
+import { getGenderID, getMaritalStatusID, getProfileEmailAndName } from './dashboardServices.js';
+import { insertTransaction } from './transactionServices.js';
 
 export async function createAccount(accountData) {
-    const { data, error } = await sb
-        .from("accounts")
-        .insert([accountData])
-        .select();
+  const { data, error } = await sb
+    .from("accounts")
+    .insert([accountData])
+    .select();
 
-    if (error) {
-        console.error("createAccount:", error.message);
-        return null;
-    }
+  if (error) {
+    console.error("createAccount:", error.message);
+    return null;
+  }
+  if (data && data.length > 0) {
+    const newAccount = data[0];
+    // Insert initial transaction for the new account
 
-    return data[0];
+    const transactionData = {
+      ref_id: await generateRefID(),
+      acc_id: newAccount.id,
+      transac_with: "System",
+      transac_type: 1,
+      date_time: newAccount.created_at,
+      amount: newAccount.initial_deposit,
+      processed_by: await getProfileEmailAndName().then(info => info.name),
+    };
+    await insertTransaction(transactionData);
+  }
+
+  return data[0];
 }

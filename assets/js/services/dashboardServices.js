@@ -131,7 +131,7 @@ async function loadLatestEmployees() {
   }
 }
 
-async function getEmployeeType(type_id) {
+export async function getEmployeeType(type_id) {
   if (type_id == null) return "";
 
   const { data, error } = await sb
@@ -190,10 +190,11 @@ export async function getEmployeesTable() {
   const { data, error } = await sb
     .from("employees")
     .select("id, first_name, last_name, email, contact_no, created_at")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .eq("is_active", true);
 
   if (error) {
-    console.error("getAllEmployeesTable:", error.message);
+    console.error("getEmployeesTable:", error.message);
     return;
   }
 
@@ -210,9 +211,9 @@ export async function getEmployeesTable() {
       <td>${emp.contact_no ?? ""}</td>
       <td>${emp.created_at ? new Date(emp.created_at).toLocaleString() : ""}</td>
       <td>
-        <button class="view-btn">View</button>
-        <button class="edit-btn">Edit</button>
-        <button class="delete-btn">Delete</button>
+        <button class="view-btn" onClick="openViewModal('${employeeIDFormat(emp.id)}')">View</button>
+        <button class="edit-btn" onClick="openEditModal('${employeeIDFormat(emp.id)}')">Edit</button>
+        <button class="delete-btn" onClick="openDeleteModal('${employeeIDFormat(emp.id)}')">Delete</button>
       </td>
     `;
     tbody.appendChild(tr);
@@ -229,7 +230,8 @@ export async function employeeFilter(emp, type) {
   let query = sb
     .from("employees_with_full_name")
     .select("id, first_name, last_name, email, contact_no, employee_type, created_at, full_name")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .eq("is_active", true);
 
   // type filter (0 = all)
   if (typeNum !== 0) {
@@ -271,9 +273,9 @@ export async function employeeFilter(emp, type) {
       <td>${empRow.contact_no ?? ""}</td>
       <td>${empRow.created_at ? new Date(empRow.created_at).toLocaleString() : ""}</td>
       <td>
-        <button class="view-btn">View</button>
-        <button class="edit-btn">Edit</button>
-        <button class="delete-btn">Delete</button>
+        <button class="view-btn" onClick="openViewModal('${employeeIDFormat(empRow.id)}')">View</button>
+        <button class="edit-btn" onClick="openEditModal('${employeeIDFormat(empRow.id)}')">Edit</button>
+        <button class="delete-btn" onClick="openDeleteModal('${employeeIDFormat(empRow.id)}')">Delete</button>
       </td>
     `;
     tbody.appendChild(tr);
@@ -340,4 +342,77 @@ export async function getMaritalStatusID(status_desc) {
   }
 
   return data?.id ?? null;
+}
+
+export async function getGenderDesc(gender_id) {
+  const { data, error } = await sb
+    .from("genders")
+    .select("gender_desc")
+    .eq("id", gender_id)
+    .maybeSingle();
+
+  if (error) {
+    console.error("getGenderDesc:", error.message);
+    return null;
+  }
+
+  return data?.gender_desc ?? null;
+}
+
+export async function getMaritalStatusDesc(status_id) {
+  const { data, error } = await sb
+    .from("marital_status")
+    .select("marital_desc")
+    .eq("id", status_id)
+    .maybeSingle();
+
+  if (error) {
+    console.error("getMaritalStatusDesc:", error.message);
+    return null;
+  }
+
+  return data?.marital_desc ?? null;
+}
+
+
+//Status Off
+
+export async function updateEmployeeStatusOff(employeeID) {
+  const numericID = getNumberIDFromString(employeeID);
+  if (numericID == null) {
+    console.error("updateEmployeeStatusOff: invalid employeeID format");
+    return null;
+  }
+  const { data, error } = await sb
+    .from("employees")
+    .update({ is_active: false }, {updated_at: new Date().toISOString()})
+    .eq("id", numericID);
+
+  if (error) {
+    console.error("updateEmployeeStatusOff:", error.message);
+    return null;
+  }
+
+  return data;
+}
+
+//Get Employee By ID
+export async function getEmployeeByID(employeeID) {
+  const numericID = getNumberIDFromString(employeeID);
+  if (numericID == null) {
+    console.error("getEmployeeByID: invalid employeeID format");
+    return null;
+  }
+  const { data, error } = await sb
+    .from("employees")
+    .select("*")
+    .eq("id", numericID)
+    .single();
+
+  if (error) {
+    console.error("getEmployeeByID:", error.message);
+    return null;
+  }
+
+  return data;
 }

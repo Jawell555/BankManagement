@@ -450,7 +450,8 @@ body {
     padding: 0 50px 0 0;
 
     #employee-id,
-    #account-id, #profile-employee-id {
+    #account-id,
+    #profile-employee-id {
         font-size: 1.25rem;
         text-align: center;
     }
@@ -570,7 +571,8 @@ body {
     margin: 10px 50px 0px 50px;
 }
 
-.submit-btn, #change-password-btn {
+.submit-btn,
+#change-password-btn {
     padding: 0.6rem 1rem;
     background-color: #0E447D;
     color: #fff;
@@ -582,7 +584,8 @@ body {
     transition: background-color 0.3s ease;
 }
 
-.submit-btn:hover, #change-password-btn:hover {
+.submit-btn:hover,
+#change-password-btn:hover {
     background-color: #4878A5;
 }
 
@@ -789,7 +792,7 @@ body {
         flex-direction: column;
         gap: 10px;
 
-        h1{
+        h1 {
             font-size: 24px;
             color: #031B42;
             font-weight: 600;
@@ -877,7 +880,137 @@ body {
     }
 }
 
+/* Modals */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
 
+.modal .modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 40%;
+    border-radius: 8px;
+
+    p {
+        padding: 5px 0;
+    }
+
+    .modal-message {
+        font-size: 16px;
+        font-weight: 400;
+        text-align: center;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+
+        button {
+            padding: 0.6rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+    }
+
+    .modal-actions .cancel-btn {
+        background-color: transparent;
+        color: #0E447D;
+        border: 2px solid #0E447D;
+    }
+
+    .modal-actions .cancel-btn:hover {
+        background-color: rgba(14, 68, 125, 0.08);
+        border-color: #4878A5;
+        color: #4878A5;
+    }
+
+    #employee-delete-confirm {
+        background-color: rgb(167, 29, 29);
+        color: #fff;
+        border: 2px solid rgb(167, 29, 29);
+    }
+
+    #employee-delete-confirm:hover {
+        background-color: rgb(200, 35, 35);
+        border-color: rgb(200, 35, 35);
+    }
+}
+
+.modal .close {
+    background: none;
+    border: none;
+    color: #aaa;
+    float: right;
+    margin: 5px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.modal .close:hover,
+.modal .close:focus {
+    color: #4878A5;
+}
+
+.modal.show {
+    display: block;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    padding: 20px 30px 20px 30px;
+}
+
+.modal-body .edit-form {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 5px 25px;
+    padding: 5px 30px;
+    align-items: center;
+
+    input {
+        padding: 0.5rem;
+        border: 1px solid #4878A5;
+        border-radius: 4px;
+        font-size: 14px;
+        width: 300px;
+    }
+
+    select {
+        padding: 0.475rem;
+        border: 1px solid #4878A5;
+        border-radius: 4px;
+        font-size: 14px;
+        width: 300px;
+    }
+}
+
+.modal-content h2 {
+    padding: 10px 20px;
+    background-color: #0E447D;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
 
 /* Responsive Design */
 

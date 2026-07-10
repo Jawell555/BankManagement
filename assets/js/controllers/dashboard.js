@@ -87,6 +87,7 @@ updateDateTime();
 setInterval(updateDateTime, 1000);
 //LOAD SIDEBAR INFO
 import { getProfileEmailAndName } from '../services/dashboardServices.js';
+
 const sidebarNameEl = document.getElementById("current-username");
 const sidebarEmailEl = document.getElementById("current-email");
 
@@ -96,57 +97,162 @@ sidebarEmailEl.textContent = await getProfileEmailAndName().then(info => info.em
 
 //load dashboard stats
 
-  import { loadDashboardStats } from '../services/dashboardServices.js';
-  const totalAdminsEl = document.getElementById("total-admins");
-  const totalEmployeesEl = document.getElementById("total-employees");
-  const totalSavingsEl = document.getElementById("savings-accounts");
-  const totalCurrentEl = document.getElementById("current-accounts");
-  const totalBankBalanceEl = document.getElementById("bank-balance-amount");
-  const totalBankDepositEl = document.getElementById("deposit-total");
-  const totalBankWithdrawEl = document.getElementById("withdraw-total");
-  const totalBankTransactionsEl = document.getElementById("transacted-total");
+import { loadDashboardStats } from '../services/dashboardServices.js';
+const totalAdminsEl = document.getElementById("total-admins");
+const totalEmployeesEl = document.getElementById("total-employees");
+const totalSavingsEl = document.getElementById("savings-accounts");
+const totalCurrentEl = document.getElementById("current-accounts");
+const totalBankBalanceEl = document.getElementById("bank-balance-amount");
+const totalBankDepositEl = document.getElementById("deposit-total");
+const totalBankWithdrawEl = document.getElementById("withdraw-total");
+const totalBankTransactionsEl = document.getElementById("transacted-total");
 
-  const stats = await loadDashboardStats();
+const stats = await loadDashboardStats();
 
-  totalAdminsEl.textContent = stats.totalAdmins;
-  totalEmployeesEl.textContent = stats.totalEmployees;
-  totalSavingsEl.textContent = stats.totalSavings;
-  totalCurrentEl.textContent = stats.totalCurrent;
-  totalBankBalanceEl.textContent = stats.totalBankBalance;
-  totalBankDepositEl.textContent = stats.totalBankDeposit;
-  totalBankWithdrawEl.textContent = stats.totalBankWithdraw;
-  totalBankTransactionsEl.textContent = stats.totalBankTransactions;
-  
-  
-  import { initDashboardData } from '../services/dashboardServices.js';
-  document.querySelector('[data-content="dashboard"]').addEventListener('click', async () => {
-    await initDashboardData();
-  });
+totalAdminsEl.textContent = stats.totalAdmins;
+totalEmployeesEl.textContent = stats.totalEmployees;
+totalSavingsEl.textContent = stats.totalSavings;
+totalCurrentEl.textContent = stats.totalCurrent;
+totalBankBalanceEl.textContent = stats.totalBankBalance;
+totalBankDepositEl.textContent = stats.totalBankDeposit;
+totalBankWithdrawEl.textContent = stats.totalBankWithdraw;
+totalBankTransactionsEl.textContent = stats.totalBankTransactions;
+
+
+import { initDashboardData } from '../services/dashboardServices.js';
+document.querySelector('[data-content="dashboard"]').addEventListener('click', async () => {
   await initDashboardData();
+});
+await initDashboardData();
 
 //View Employee
- import { getEmployeesTable } from '../services/dashboardServices.js';
- import { employeeFilter } from '../services/dashboardServices.js';
-  // Refresh Employee Table every operation clicked
-  async function refreshEmployeeTable() {
-    await getAllEmployeesTable();
+import { getEmployeesTable } from '../services/dashboardServices.js';
+import { employeeFilter, updateEmployeeStatusOff } from '../services/dashboardServices.js';
+// Refresh Employee Table every operation clicked
+async function refreshEmployeeTable() {
+  await getEmployeesTable();
+}
+
+let employeeTablesLoaded = false;
+document.querySelector('[data-content="view-employees"]').addEventListener('click', async () => {
+  if (!employeeTablesLoaded) {
+    await getEmployeesTable();
+    employeeTablesLoaded = true;
+  }
+});
+
+document.getElementById('employee-filter-btn').addEventListener('click', async (event) => {
+  const keyword = document.getElementById('employee-filter').value;
+  const type = document.getElementById('employee-type-filter').value;
+
+  await employeeFilter(keyword, type);
+});
+
+// View, Edit, Delete Employee Modal
+const toggleModal = (modalType, action, employeeId = null) => {
+  const modal = document.getElementById(`employee-${modalType}-modal`);
+
+  if (!modal) {
+    console.error(`Could not find the element #employee-${modalType}-modal`);
+    return;
   }
 
-  let employeeTablesLoaded = false;
-  document.querySelector('[data-content="view-employees"]').addEventListener('click', async () => {
-    if (!employeeTablesLoaded) {
-      await getEmployeesTable();
-      employeeTablesLoaded = true;
+  if (action === 'open') {
+    if (employeeId) {
+      console.log(`Opening ${modalType} modal for employee:`, employeeId);
+      modal.dataset.employeeId = employeeId;
     }
-  });
+    modal.classList.add('show');
+  } else if (action === 'close') {
+    modal.classList.remove('show');
+    delete modal.dataset.employeeId;
+  }
+};
 
-  document.getElementById('employee-filter-btn').addEventListener('click', async (event) => {
-    const keyword = document.getElementById('employee-filter').value;
-    const type = document.getElementById('employee-type-filter').value;
-    
-    await employeeFilter(keyword, type);
-  });
+// Global expose layer (maintaining your existing window API structure)
+import { getEmployeeByID, getMaritalStatusDesc, getGenderDesc,getEmployeeType } from '../services/dashboardServices.js';
+window.openViewModal = async (id) => {
+  toggleModal('view', 'open', id);
 
+  try {
+    console.log(`Fetching data for employee view layout: ${id}`);
+    const employee = await getEmployeeByID(id);
+    console.log("Viewing employee:", employee);
+
+    const viewFields = {
+      id: document.getElementById('ve-id'),
+      fName: document.getElementById('ve-fname'),
+      lName: document.getElementById('ve-lname'),
+      gender: document.getElementById('ve-gender'),
+      birth: document.getElementById('ve-birth'),
+      marital: document.getElementById('ve-marital'),
+      email: document.getElementById('ve-email'),
+      contact: document.getElementById('ve-contact'),
+      address: document.getElementById('ve-address'),
+      city: document.getElementById('ve-city'),
+      postal: document.getElementById('ve-postal'),
+      education: document.getElementById('ve-education'),
+      experience: document.getElementById('ve-experience'),
+      title: document.getElementById('ve-title'),
+      type: document.getElementById('ve-type'),
+      createdAt: document.getElementById('ve-hire-date'),
+      updatedAt: document.getElementById('ve-date-updated')
+    };
+
+    if (employee) {
+      viewFields.id.textContent = employee.id ?? "";
+      viewFields.fName.textContent = employee.first_name ?? "";
+      viewFields.lName.textContent = employee.last_name ?? "";
+      viewFields.gender.textContent = await getGenderDesc(employee.gender) ?? "";
+      viewFields.birth.textContent = employee.date_birth? new Date(employee.date_birth).toLocaleDateString() : "";
+      viewFields.marital.textContent = await getMaritalStatusDesc(employee.marital_status) ?? "";
+      viewFields.email.textContent = employee.email ?? "";
+      viewFields.contact.textContent = employee.contact_no ?? "";
+      viewFields.address.textContent = employee.home ?? "";
+      viewFields.city.textContent = employee.city ?? "";
+      viewFields.postal.textContent = employee.postal_code ?? "";
+      viewFields.education.textContent = employee.attainment ?? "";
+      viewFields.experience.textContent = employee.experience ?? "";
+      viewFields.title.textContent = employee.job_title ?? "";
+      viewFields.type.textContent = await getEmployeeType(employee.employee_type) ?? "";
+      viewFields.createdAt.textContent = employee.created_at ? new Date(employee.created_at).toLocaleString() : "";
+      viewFields.updatedAt.textContent = employee.updated_at ? new Date(employee.updated_at).toLocaleString() : "";
+    }
+    else {
+      console.error("Employee data not found for ID:", employeeId);
+    }
+
+  }catch (error) {
+    console.error("Error fetching employee data:", error);
+  
+};
+};
+window.closeViewModal = () => toggleModal('view', 'close');
+
+window.openEditModal = (id) => toggleModal('edit', 'open', id);
+window.closeEditModal = () => toggleModal('edit', 'close');
+
+window.openDeleteModal = (id) => toggleModal('delete', 'open', id);
+window.closeDeleteModal = () => toggleModal('delete', 'close');
+
+// Handle View Employee
+
+
+// Handle Delete Employee
+window.confirmDeleteEmployee = async () => {
+  const employeeId = document.getElementById('employee-delete-modal').dataset.employeeId;
+  const confirmed = confirm("Are you sure you want to delete this employee?");
+  if (!employeeId) {
+    console.error("No employee ID found on the modal!");
+    return;
+  }
+  console.log(`Proceeding to delete employee with ID: ${employeeId}`);
+  if (confirmed) {
+    await updateEmployeeStatusOff(employeeId);
+    closeDeleteModal();
+    await refreshEmployeeTable();
+  }
+};
 
 //Add Employee
 import { generateEmployeeID } from '../services/dashboardServices.js';
@@ -207,11 +313,11 @@ document.querySelector('[type="submit"][name="add-employee-form"]').addEventList
   }
 });
 
-  document.querySelector('[data-content="add-employees"]').addEventListener('click', async () => {
-    
-    const newEmployeeID = await generateEmployeeID();
-    employeeID.value = newEmployeeID;
-  });
+document.querySelector('[data-content="add-employees"]').addEventListener('click', async () => {
+
+  const newEmployeeID = await generateEmployeeID();
+  employeeID.value = newEmployeeID;
+});
 
 async function refreshAddEmployeeContent() {
   employeeID.value = await generateEmployeeID();
