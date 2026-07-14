@@ -1,15 +1,15 @@
 import { getProfileEmailAndName } from '../services/dashboardServices.js';
 import { loadDashboardStats } from '../services/dashboardServices.js';
 import { initDashboardData } from '../services/dashboardServices.js';
-import { getEmployeesTable } from '../services/dashboardServices.js';
+// import { getEmployeesTable } from '../services/dashboardServices.js';
 import { employeeFilter, updateEmployeeStatusOff } from '../services/dashboardServices.js';
-import { employeeIDFormat, getEmployeeByID, getMaritalStatusDesc, getGenderDesc,getEmployeeType } from '../services/dashboardServices.js';
+import { employeeIDFormat, getEmployeeByID, getMaritalStatusDesc, getGenderDesc, getEmployeeType } from '../services/dashboardServices.js';
 import { generateEmployeeID } from '../services/dashboardServices.js';
 import { createEmployee } from '../services/dashboardServices.js';
 import { getEmployeeTypeId } from '../services/dashboardServices.js';
 import { getGenderID } from '../services/dashboardServices.js';
 import { getMaritalStatusID } from '../services/dashboardServices.js';
-import { getAccountsTable } from '../services/accountServices.js';
+// import { getAccountsTable } from '../services/accountServices.js';
 import { accountsFilter } from '../services/accountServices.js';
 import {
   generateAccountID,
@@ -141,7 +141,6 @@ totalBankWithdrawEl.textContent = stats.totalBankWithdraw;
 totalBankTransactionsEl.textContent = stats.totalBankTransactions;
 
 
-
 document.querySelector('[data-content="dashboard"]').addEventListener('click', async () => {
   await initDashboardData();
 });
@@ -149,23 +148,26 @@ await initDashboardData();
 
 //View Employee
 // Refresh Employee Table every operation clicked
-async function refreshEmployeeTable() {
-  await getEmployeesTable();
+
+function getCurrentFilterValues() {
+  const keyword = document.getElementById('employee-filter').value;
+  const type = document.getElementById('employee-type-filter').value;
+  return { keyword, type };
 }
 
-let employeeTablesLoaded = false;
+async function refreshEmployeeTable() {
+  const { keyword, type } = getCurrentFilterValues();
+  await employeeFilter(keyword, type, 1); // Reset to page 1 after any operation
+}
+
 document.querySelector('[data-content="view-employees"]').addEventListener('click', async () => {
-  if (!employeeTablesLoaded) {
-    await getEmployeesTable();
-    employeeTablesLoaded = true;
-  }
+  const { keyword, type } = getCurrentFilterValues();
+  await employeeFilter(keyword, type, 1);
 });
 
 document.getElementById('employee-filter-btn').addEventListener('click', async (event) => {
-  const keyword = document.getElementById('employee-filter').value;
-  const type = document.getElementById('employee-type-filter').value;
-
-  await employeeFilter(keyword, type);
+  const { keyword, type } = getCurrentFilterValues();
+  await employeeFilter(keyword, type, 1);
 });
 
 // View, Edit, Delete Employee Modal
@@ -223,7 +225,7 @@ window.openViewModal = async (id) => {
       viewFields.fName.textContent = employee.first_name ?? "";
       viewFields.lName.textContent = employee.last_name ?? "";
       viewFields.gender.textContent = await getGenderDesc(employee.gender) ?? "";
-      viewFields.birth.textContent = employee.date_birth? new Date(employee.date_birth).toLocaleDateString() : "";
+      viewFields.birth.textContent = employee.date_birth ? new Date(employee.date_birth).toLocaleDateString() : "";
       viewFields.marital.textContent = await getMaritalStatusDesc(employee.marital_status) ?? "";
       viewFields.email.textContent = employee.email ?? "";
       viewFields.contact.textContent = employee.contact_no ?? "";
@@ -249,8 +251,8 @@ window.closeViewModal = () => toggleModal('view', 'close');
 
 window.openEditModal = async (id) => {
   toggleModal('edit', 'open', id);
-  
-  try{
+
+  try {
     const saveButton = document.getElementById('employee-edit-save');
     console.log(`Fetching data for employee view layout: ${id}`);
     const employee = await getEmployeeByID(id);
@@ -298,7 +300,7 @@ window.openEditModal = async (id) => {
     else {
       console.error("Employee data not found for ID:", employeeId);
     }
-    
+
     saveButton.onclick = async () => {
       const updatedEmployeeData = {
         marital_status: await getMaritalStatusID(viewFields.marital_status.value),
@@ -326,9 +328,6 @@ window.closeEditModal = () => toggleModal('edit', 'close');
 
 window.openDeleteModal = (id) => toggleModal('delete', 'open', id);
 window.closeDeleteModal = () => toggleModal('delete', 'close');
-
-// Handle View Employee
-
 
 // Handle Delete Employee
 window.confirmDeleteEmployee = async () => {
@@ -425,19 +424,24 @@ async function refreshAddEmployeeContent() {
 }
 
 //View Accounts
+export function getCurrentAccountFilterValues() {
+  const keyword = document.getElementById('account-filter').value;
+  const type = document.getElementById('account-type-filter').value;
+  return { keyword, type };
+}
 
 let accountsTablesLoaded = false;
 document.querySelector('[data-content="view-accounts"]').addEventListener('click', async () => {
   if (!accountsTablesLoaded) {
-    await getAccountsTable();
+    const { keyword, type } = getCurrentAccountFilterValues();
+    await accountsFilter(keyword, type, 1); // Reset to page 1 after any operation  
     accountsTablesLoaded = true;
   }
 });
 
 document.getElementById('account-filter-btn').addEventListener('click', async (event) => {
-  const keyword = document.getElementById('account-filter').value;
-  const type = document.getElementById('account-type-filter').value;
-  await accountsFilter(keyword, type);
+  const { keyword, type } = getCurrentAccountFilterValues();
+  await accountsFilter(keyword, type, 1); // Reset to page 1 after filter is applied
 });
 
 // Form + inputs

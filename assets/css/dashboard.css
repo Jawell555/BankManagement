@@ -245,7 +245,7 @@ body {
 
 }
 
-.pagination-container {
+.pagination-controls {
     display: flex;
     flex-direction: row;
     gap: 10px;
@@ -254,13 +254,13 @@ body {
     margin-top: 1rem;
 }
 
-.pagination-container #page-numbers {
+.pagination-controls #page-numbers {
     font-size: 20px;
     font-weight: 750;
     color: #0E447D;
 }
 
-.pagination-container button {
+.pagination-controls button {
     background-color: #0E447D;
     color: #fff;
     border: none;
@@ -270,7 +270,7 @@ body {
     transition: background-color 0.3s ease;
 }
 
-.pagination-container button:hover {
+.pagination-controls button:hover {
     background-color: #4878A5;
 }
 
@@ -950,6 +950,7 @@ body {
     }
 }
 
+
 .modal .close {
     background: none;
     border: none;
@@ -1003,6 +1004,12 @@ body {
         width: 300px;
     }
 }
+.readonly-select {
+    background-color: #cacaca;
+    pointer-events: none;
+    user-select: none;
+}
+
 
 .modal-content h2 {
     padding: 10px 20px;

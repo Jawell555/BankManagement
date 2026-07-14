@@ -15,7 +15,7 @@ export async function isUserActive(username) {
   return data?.is_active ?? false;
 }
 
-function currencyFormat(amount) {
+export function currencyFormat(amount) {
   return new Intl.NumberFormat('en-PH', {
     style: 'currency',
     currency: 'PHP',
@@ -122,7 +122,7 @@ async function loadLatestEmployees() {
     .from("employees")
     .select("id, first_name, last_name, email, employee_type, created_at")
     .order("created_at", { ascending: false })
-    .limit(5);
+    .limit(10);
 
   if (error) {
     console.error("loadLatestEmployees:", error.message);
@@ -198,53 +198,65 @@ export async function getEmployeeTypeId(emp_desc) {
   return data?.id ?? 0;
 }
 
-export async function getEmployeesTable() {
-  const tbody = document.getElementById("employee-table-body");
-  if (!tbody) return;
+// export async function getEmployeesTable() {
+//   const tbody = document.getElementById("employee-table-body");
+//   if (!tbody) return;
 
-  const { data, error } = await sb
-    .from("employees")
-    .select("id, first_name, last_name, email, contact_no, created_at")
-    .order("created_at", { ascending: false })
-    .eq("is_active", true);
+//   const { data, error } = await sb
+//     .from("employees")
+//     .select("id, first_name, last_name, email, contact_no, created_at")
+//     .order("created_at", { ascending: false })
+//     .eq("is_active", true);
 
-  if (error) {
-    console.error("getEmployeesTable:", error.message);
-    return;
-  }
+//   if (error) {
+//     console.error("getEmployeesTable:", error.message);
+//     return;
+//   }
 
-  tbody.innerHTML = "";
+//   tbody.innerHTML = "";
 
-  for (const emp of (data ?? [])) {
-    const empType = await getEmployeeType(emp.employee_type);
+//   for (const emp of (data ?? [])) {
+//     const empType = await getEmployeeType(emp.employee_type);
 
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${employeeIDFormat(emp.id) ?? ""}</td>
-      <td>${emp.first_name ?? ""} ${emp.last_name ?? ""}</td>
-      <td>${emp.email ?? ""}</td>
-      <td>${emp.contact_no ?? ""}</td>
-      <td>${emp.created_at ? new Date(emp.created_at).toLocaleString() : ""}</td>
-      <td>
-        <button class="view-btn" onClick="openViewModal('${employeeIDFormat(emp.id)}')">View</button>
-        <button class="edit-btn" onClick="openEditModal('${employeeIDFormat(emp.id)}')">Edit</button>
-        <button class="delete-btn" onClick="openDeleteModal('${employeeIDFormat(emp.id)}')">Delete</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  }
-}
+//     const tr = document.createElement("tr");
+//     tr.innerHTML = `
+//       <td>${employeeIDFormat(emp.id) ?? ""}</td>
+//       <td>${emp.first_name ?? ""} ${emp.last_name ?? ""}</td>
+//       <td>${emp.email ?? ""}</td>
+//       <td>${emp.contact_no ?? ""}</td>
+//       <td>${emp.created_at ? new Date(emp.created_at).toLocaleString() : ""}</td>
+//       <td>
+//         <button class="view-btn" onClick="openViewModal('${employeeIDFormat(emp.id)}')">View</button>
+//         <button class="edit-btn" onClick="openEditModal('${employeeIDFormat(emp.id)}')">Edit</button>
+//         <button class="delete-btn" onClick="openDeleteModal('${employeeIDFormat(emp.id)}')">Delete</button>
+//       </td>
+//     `;
+//     tbody.appendChild(tr);
+//   }
+// }
 
-export async function employeeFilter(emp, type) {
+// Keep track of the current page globally or pass it into your main setup
+const empPageNumber = document.getElementById("emp-page-numbers");
+let currentPage = 1; 
+const PAGE_SIZE = 10;
+
+export async function employeeFilter(emp, type, page = 1) {
+  currentPage = page; // Update tracker
+  empPageNumber.textContent = currentPage;
   const tbody = document.getElementById("employee-table-body");
   if (!tbody) return;
 
   const keyword = (emp ?? "").trim();
   const typeNum = await getEmployeeTypeId(type);
 
+  // 1. Calculate Supabase range indices
+  const from = (page - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+
+  // 2. Add { count: "exact" } to retrieve the grand total for pagination math
   let query = sb
     .from("employees_with_full_name")
-    .select("id, first_name, last_name, email, contact_no, employee_type, created_at, full_name")
+    .select("id, first_name, last_name, email, contact_no, employee_type, created_at, full_name", { count: "exact" })
     .order("created_at", { ascending: false })
     .eq("is_active", true);
 
@@ -255,22 +267,17 @@ export async function employeeFilter(emp, type) {
 
   // search filter
   if (keyword) {
-    const employeeID = getNumberIDFromString(keyword); // e.g. "EMP000123" -> 123
+    const employeeID = getNumberIDFromString(keyword);
 
     if (employeeID != null) {
-      // numeric ID search
-      query = query.or(
-        `id.eq.${employeeID}`
-      );
+      query = query.or(`id.eq.${employeeID}`);
     } else {
-      // text search only
-      query = query.or(
-        `full_name.ilike.%${keyword}%`
-      );
+      query = query.or(`full_name.ilike.%${keyword}%`);
     }
   }
 
-  const { data, error } = await query;
+  // 3. Apply the pagination range limitation to the query
+  const { data, error, count } = await query.range(from, to);
 
   if (error) {
     console.error("employeeFilter:", error.message);
@@ -288,13 +295,45 @@ export async function employeeFilter(emp, type) {
       <td>${empRow.contact_no ?? ""}</td>
       <td>${empRow.created_at ? new Date(empRow.created_at).toLocaleString() : ""}</td>
       <td>
-        <button class="view-btn" onClick="openViewModal('${employeeIDFormat(empRow.id)}')">View</button>
-        <button class="edit-btn" onClick="openEditModal('${employeeIDFormat(empRow.id)}')">Edit</button>
-        <button class="delete-btn" onClick="openDeleteModal('${employeeIDFormat(empRow.id)}')">Delete</button>
+        <button class="view-btn" onClick="openEmployeeViewModal('${employeeIDFormat(empRow.id)}')">View</button>
+        <button class="edit-btn" onClick="openEmployeeEditModal('${employeeIDFormat(empRow.id)}')">Edit</button>
+        <button class="delete-btn" onClick="openEmployeeDeleteModal('${employeeIDFormat(empRow.id)}')">Delete</button>
       </td>
     `;
     tbody.appendChild(tr);
   }
+
+  // 4. Call helper function to draw/update your pagination controls
+  renderPaginationControls(count, emp, type);
+}
+
+// 5. Helper function to render the Prev / Page Indicator / Next UI
+function renderPaginationControls(totalCount, currentEmp, currentType) {
+  // Look for an existing controls container or create one right below the table
+  let controlsContainer = document.getElementById("pagination-controls");
+  if (!controlsContainer) {
+    controlsContainer = document.createElement("div");
+    controlsContainer.id = "pagination-controls";
+    // Inserts it right after the table element's parent wrapper if needed
+    document.getElementById("employee-table-body").closest("table").after(controlsContainer);
+  }
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE) || 1;
+
+  controlsContainer.innerHTML = `
+    <button id="emp-btn-prev" ${currentPage === 1 ? "disabled" : ""}><i class="fas fa-chevron-left"></i></button>
+    <span id="emp-page-numbers">${currentPage} of ${totalPages}</span>
+    <button id="emp-btn-next" ${currentPage === totalPages ? "disabled" : ""}><i class="fas fa-chevron-right"></i></button>
+  `;
+
+  // Attach event listeners to rerun the filter on click
+  document.getElementById("emp-btn-prev").addEventListener("click", () => {
+    if (currentPage > 1) employeeFilter(currentEmp, currentType, currentPage - 1);
+  });
+
+  document.getElementById("emp-btn-next").addEventListener("click", () => {
+    if (currentPage < totalPages) employeeFilter(currentEmp, currentType, currentPage + 1);
+  });
 }
 
 //Add Employee 
