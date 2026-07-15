@@ -375,7 +375,7 @@ body {
 
 .employee-table,
 .account-table,
-.bank-table {
+.transaction-table {
     margin: 0 50px;
     background-color: #fff;
     border-radius: 8px;
@@ -386,7 +386,7 @@ body {
 
 .employee-table table,
 .account-table table,
-.bank-table table {
+.transaction-table table {
     width: 100%;
     border-collapse: collapse;
 
@@ -415,7 +415,7 @@ body {
 
 .employee-table button,
 .account-table button,
-.bank-table button {
+.transaction-table button {
     padding: .5rem 1rem;
     background-color: #0E447D;
     color: #fff;
@@ -425,7 +425,7 @@ body {
 
 .employee-table button:hover,
 .account-table button:hover,
-.bank-table button:hover {
+.transaction-table button:hover {
     background-color: #4878A5;
 }
 
@@ -926,25 +926,25 @@ body {
         }
     }
 
-    .modal-actions .cancel-btn {
+    .modal-actions .cancel-btn,.modal-actions .save-btn {
         background-color: transparent;
         color: #0E447D;
         border: 2px solid #0E447D;
     }
 
-    .modal-actions .cancel-btn:hover {
+    .modal-actions .cancel-btn:hover, .modal-actions .save-btn:hover {
         background-color: rgba(14, 68, 125, 0.08);
         border-color: #4878A5;
         color: #4878A5;
     }
 
-    #employee-delete-confirm {
+    .modal-actions .delete-btn {
         background-color: rgb(167, 29, 29);
         color: #fff;
         border: 2px solid rgb(167, 29, 29);
     }
 
-    #employee-delete-confirm:hover {
+    .modal-actions .delete-btn:hover {
         background-color: rgb(200, 35, 35);
         border-color: rgb(200, 35, 35);
     }

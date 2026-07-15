@@ -1,8 +1,8 @@
 import { supabase as sb } from '../config/app.js';
 import { currencyFormat, getGenderDesc, getMaritalStatusDesc, getNumberIDFromString } from './dashboardServices.js';
-import { getCurrentAccountFilterValues } from '../controllers/dashboard.js';
+import { getCurrentAccountFilterValues, refreshAccountsTable } from '../controllers/dashboard.js';
 
-function accountIDFormat(id) {
+export function accountIDFormat(id) {
   const idStr = id.toString();
   const prefix = 'ACC' + (idStr.length < 6 ? '0'.repeat(6 - idStr.length) : '');
   return prefix + idStr;
@@ -228,11 +228,9 @@ export async function getPresentedIDTypeID(ID_desc) {
 }
 
 //Account View Modal
-async function openAccountViewModal (formattedID) {
+async function openAccountViewModal(formattedID) {
   try {
-    console.log("openAccountViewModal called with accountID:", formattedID);
     const account = await getAccountById(formattedID);
-    console.log("Viewing Account:", account);
 
     const viewFields = {
       id: document.getElementById("va-id"),
@@ -250,7 +248,7 @@ async function openAccountViewModal (formattedID) {
       postal_code: document.getElementById("va-postal"),
       acc_title: document.getElementById("va-title"),
       acc_type: document.getElementById("va-type"),
-      balance: document.getElementById("va-balance"),
+      acc_balance: document.getElementById("va-balance"),
       date_created: document.getElementById("va-date-created"),
       date_updated: document.getElementById("va-date-updated"),
     };
@@ -288,11 +286,12 @@ window.closeAccountViewModal = () => {
 }
 
 //Account Edit Modal
-async function openAccountEditModal (formattedID) {
+async function openAccountEditModal(formattedID) {
   try {
-    console.log("openAccountEditModal called with accountID:", formattedID);
+    document.getElementById("account-edit-modal").classList.add("show");
+    const accSaveBtn = document.getElementById("account-edit-save");
+
     const account = await getAccountById(formattedID);
-    console.log("Editing Account:", account);
 
     const editFields = {
       id: document.getElementById("vad-id"),
@@ -329,10 +328,27 @@ async function openAccountEditModal (formattedID) {
       editFields.acc_title.value = account.acc_title ?? "";
       editFields.acc_type.value = await getAccountTypeDesc(account.acc_type) ?? "";
 
-      document.getElementById("account-edit-modal").classList.add("show");
-    }else {
+
+    } else {
       console.error("Account data not found for ID:", formattedID);
     }
+
+    accSaveBtn.onclick = async () => {
+      const updatedData = {
+        marital_status: await getMaritalStatusID(editFields.marital_status.value),
+        email: editFields.email.value,
+        contact_no: editFields.contact_no.value,
+        home: editFields.home.value,
+        city: editFields.city.value,
+        postal_code: editFields.postal_code.value,
+        updated_at: new Date().toISOString()
+      };
+
+      await updateAccount(account.id, updatedData);
+      closeAccountEditModal();
+      await refreshAccountsTable();
+    };
+
   } catch (error) {
     console.error("openAccountEditModal:", error.message);
   }
@@ -342,7 +358,28 @@ window.closeAccountEditModal = () => {
   document.getElementById("account-edit-modal").classList.remove("show");
 }
 
-import { getGenderID, getMaritalStatusID, getProfileEmailAndName } from './dashboardServices.js';
+//Account Delete Modal
+async function openAccountDeleteModal(formattedID) {
+  try {
+    document.getElementById("account-delete-modal").classList.add("show");
+    const accDeleteBtn = document.getElementById("account-delete-confirm");
+
+    accDeleteBtn.onclick = async () => {
+      await updateAccountIsActiveOff(formattedID);
+      alert("Account deleted successfully!");
+      closeAccountDeleteModal();
+      await refreshAccountsTable();
+    }
+  } catch (error) {
+    console.error("openAccountDeleteModal:", error.message);
+  }
+}
+
+window.closeAccountDeleteModal = () => {
+  document.getElementById("account-delete-modal").classList.remove("show");
+}
+
+import { getGenderID, getMaritalStatusID, getProfileInfo } from './dashboardServices.js';
 import { insertTransaction } from './transactionServices.js';
 
 export async function createAccount(accountData) {
@@ -360,13 +397,15 @@ export async function createAccount(accountData) {
     // Insert initial transaction for the new account
 
     const transactionData = {
-      ref_id: await generateRefID(),
       acc_id: newAccount.id,
+      acc_f_name: newAccount.f_name,
+      acc_l_name: newAccount.l_name,
+      acc_name: `${newAccount.f_name} ${newAccount.l_name}`,
       transac_with: "System",
       transac_type: 1,
       date_time: newAccount.created_at,
       amount: newAccount.initial_deposit,
-      processed_by: await getProfileEmailAndName().then(info => info.name),
+      processed_by: await getProfileInfo().then(info => info.id ?? null),
     };
     await insertTransaction(transactionData);
   }
@@ -374,7 +413,7 @@ export async function createAccount(accountData) {
   return data[0];
 }
 
-async function getAccountById(accountID) {
+export async function getAccountById(accountID) {
   const accID = getAccNumberIDFromString(accountID);
   if (accID == null) {
     console.error("Invalid account ID format:", accountID);
@@ -409,6 +448,24 @@ async function getPresentedIDTypeDesc(presentedIDTypeID) {
   return data?.id_desc ?? null;
 }
 
+async function updateAccountIsActiveOff(accountID) {
+  const accID = typeof accountID === "number" ? accountID : getAccNumberIDFromString(accountID);
+  if (accID == null) {
+    console.error("Invalid account ID format:", accountID);
+    return null;
+  }
+  const { data, error } = await sb
+    .from("accounts")
+    .update({ is_active: false })
+    .eq("id", accID)
+    .select();
+
+  if (error) {
+    console.error("updateAccountIsActiveOff:", error.message);
+    return null;
+  }
+  return data;
+}
 
 async function updateAccount(accountID, updatedData) {
   const accID = typeof accountID === "number" ? accountID : getAccNumberIDFromString(accountID);
@@ -420,11 +477,61 @@ async function updateAccount(accountID, updatedData) {
   const { data, error } = await sb
     .from("accounts")
     .update(updatedData)
-    .eq("id", accID);
+    .eq("id", accID)
+    .select();
 
   if (error) {
     console.error("updateAccount:", error.message);
     return null;
   }
+
+  return data;
+}
+
+export async function updateBalanceDeposit(accountID, amount) {
+  const accID =
+    typeof accountID === "number"
+      ? accountID
+      : getAccNumberIDFromString(accountID);
+
+  const depositAmount = Number(amount);
+
+  if (accID == null) {
+    console.error("Invalid account ID format:", accountID);
+    return null;
+  }
+
+  if (!Number.isFinite(depositAmount) || depositAmount <= 0) {
+    console.error("Invalid deposit amount:", amount);
+    return null;
+  }
+
+  const { data: account, error: getError } = await sb
+    .from("accounts")
+    .select("acc_balance")
+    .eq("id", accID)
+    .single();
+
+  if (getError) {
+    console.error("Could not get account balance:", getError.message);
+    return null;
+  }
+
+  const newBalance = Number(account.acc_balance ?? 0) + depositAmount;
+
+  const { data, error: updateError } = await sb
+    .from("accounts")
+    .update({
+      acc_balance: newBalance
+    })
+    .eq("id", accID)
+    .select()
+    .single();
+
+  if (updateError) {
+    console.error("updateBalanceDeposit:", updateError.message);
+    return null;
+  }
+
   return data;
 }

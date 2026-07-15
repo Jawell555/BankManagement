@@ -1,4 +1,4 @@
-import { getProfileEmailAndName } from '../services/dashboardServices.js';
+import { getProfileInfo } from '../services/dashboardServices.js';
 import { loadDashboardStats } from '../services/dashboardServices.js';
 import { initDashboardData } from '../services/dashboardServices.js';
 // import { getEmployeesTable } from '../services/dashboardServices.js';
@@ -10,18 +10,17 @@ import { getEmployeeTypeId } from '../services/dashboardServices.js';
 import { getGenderID } from '../services/dashboardServices.js';
 import { getMaritalStatusID } from '../services/dashboardServices.js';
 // import { getAccountsTable } from '../services/accountServices.js';
-import { accountsFilter } from '../services/accountServices.js';
+import { accountsFilter, accountIDFormat } from '../services/accountServices.js';
 import {
   generateAccountID,
   getPresentedIDTypeID,
-  getAccountTypeId
+  getAccountTypeId,
+  getAccountById
 } from "../services/accountServices.js";
 import { createAccount } from "../services/accountServices.js";
-import { updateEmployee } from '../services/dashboardServices.js';
+import { updateEmployee, currencyFormat} from '../services/dashboardServices.js';
 
-
-
-const sb = window.supabaseClient;
+import { supabase as sb } from '../config/app.js';
 
 const menuItems = document.querySelectorAll('.menu-item[data-content]');
 const contents = document.querySelectorAll('.content');
@@ -113,8 +112,8 @@ setInterval(updateDateTime, 1000);
 const sidebarNameEl = document.getElementById("current-username");
 const sidebarEmailEl = document.getElementById("current-email");
 
-sidebarNameEl.textContent = await getProfileEmailAndName().then(info => info.name ?? "Loading...");
-sidebarEmailEl.textContent = await getProfileEmailAndName().then(info => info.email ?? "Loading...");
+sidebarNameEl.textContent = await getProfileInfo().then(info => info.name ?? "Loading...");
+sidebarEmailEl.textContent = await getProfileInfo().then(info => info.email ?? "Loading...");
 
 
 //load dashboard stats
@@ -181,7 +180,6 @@ const toggleModal = (modalType, action, employeeId = null) => {
 
   if (action === 'open') {
     if (employeeId) {
-      console.log(`Opening ${modalType} modal for employee:`, employeeId);
       modal.dataset.employeeId = employeeId;
     }
     modal.classList.add('show');
@@ -192,13 +190,11 @@ const toggleModal = (modalType, action, employeeId = null) => {
 };
 
 // Global expose layer (maintaining your existing window API structure)
-window.openViewModal = async (id) => {
+window.openEmployeeViewModal = async (id) => {
   toggleModal('view', 'open', id);
 
   try {
-    console.log(`Fetching data for employee view layout: ${id}`);
     const employee = await getEmployeeByID(id);
-    console.log("Viewing employee:", employee);
 
     const viewFields = {
       id: document.getElementById('ve-id'),
@@ -247,16 +243,14 @@ window.openViewModal = async (id) => {
     console.error("Error fetching employee data:", error);
   }
 };
-window.closeViewModal = () => toggleModal('view', 'close');
+window.closeEmployeeViewModal = () => toggleModal('view', 'close');
 
-window.openEditModal = async (id) => {
+window.openEmployeeEditModal = async (id) => {
   toggleModal('edit', 'open', id);
 
   try {
     const saveButton = document.getElementById('employee-edit-save');
-    console.log(`Fetching data for employee view layout: ${id}`);
     const employee = await getEmployeeByID(id);
-    console.log("Viewing employee:", employee);
 
     const viewFields = {
       id: document.getElementById('ved-id'),
@@ -315,7 +309,7 @@ window.openEditModal = async (id) => {
       };
 
       await updateEmployee(employee.id, updatedEmployeeData);
-      closeEditModal();
+      closeEmployeeEditModal();
       await refreshEmployeeTable();
     }
 
@@ -324,25 +318,24 @@ window.openEditModal = async (id) => {
   }
 };
 
-window.closeEditModal = () => toggleModal('edit', 'close');
+window.closeEmployeeEditModal = () => toggleModal('edit', 'close');
 
-window.openDeleteModal = (id) => toggleModal('delete', 'open', id);
-window.closeDeleteModal = () => toggleModal('delete', 'close');
+window.openEmployeeDeleteModal = (id) => toggleModal('delete', 'open', id);
+window.closeEmployeeDeleteModal = () => toggleModal('delete', 'close');
 
 // Handle Delete Employee
 window.confirmDeleteEmployee = async () => {
   const employeeId = document.getElementById('employee-delete-modal').dataset.employeeId;
-  const confirmed = confirm("Are you sure you want to delete this employee?");
   if (!employeeId) {
     console.error("No employee ID found on the modal!");
     return;
   }
-  console.log(`Proceeding to delete employee with ID: ${employeeId}`);
-  if (confirmed) {
-    await updateEmployeeStatusOff(employeeId);
-    closeDeleteModal();
-    await refreshEmployeeTable();
-  }
+
+  await updateEmployeeStatusOff(employeeId);
+  closeEmployeeDeleteModal();
+  alert("Employee deleted successfully!");
+  await refreshEmployeeTable();
+
 };
 
 //Add Employee
@@ -428,6 +421,11 @@ export function getCurrentAccountFilterValues() {
   const keyword = document.getElementById('account-filter').value;
   const type = document.getElementById('account-type-filter').value;
   return { keyword, type };
+}
+
+export async function refreshAccountsTable() {
+  const { keyword, type } = getCurrentAccountFilterValues();
+  await accountsFilter(keyword, type, 1); // Reset to page 1 after any operation
 }
 
 let accountsTablesLoaded = false;
@@ -593,3 +591,126 @@ async function refreshAddAccountContent() {
   accountType.value = "";
   accountBalance.value = "0";
 }
+import {getFilteredTransactions, generateRefID, getTransactionTypeId, insertTransaction} from '../services/transactionServices.js';
+
+import { updateBalanceDeposit } from '../services/accountServices.js';
+
+// Account Operation (Deposit)
+const depositSearch = document.getElementById("deposit-account-search");
+const depositForm = document.getElementById("deposit-form");
+
+const depositAccountTitle = document.getElementById("deposit-account-title");
+const depositAccountName = document.getElementById("deposit-account-name");
+const depositAccountNumber = document.getElementById("deposit-account-number");
+const depositAccountBalance = document.getElementById("deposit-account-balance");
+const depositAccountStatus = document.getElementById("deposit-account-status");
+const depositAccountType = document.getElementById("deposit-account-type");
+
+const depositReference = document.getElementById("deposit-reference");
+const depositType = document.getElementById("deposit-type");
+const depositDate = document.getElementById("deposit-live-datetime");
+const depositAmount = document.getElementById("deposit-amount");
+const depositorName = document.getElementById("deposit-depositor-name");
+
+const depositBtn = document.getElementById("deposit-btn");
+
+document.querySelector('[data-content="deposit-operations"]').addEventListener('click', async () => {
+  const newRefID = await generateRefID();
+  depositReference.value = newRefID;
+});
+
+document.getElementById("deposit-search-btn").addEventListener("click", async (event) => {
+  event.preventDefault();
+  const accountNumber = depositSearch.value.trim();
+
+  const account = await getAccountById(accountNumber);
+  if (account) {
+    depositAccountTitle.value = account.acc_title;
+    depositAccountName.value = `${account.f_name} ${account.l_name}`;
+    depositAccountNumber.value = accountIDFormat(account.id);
+    depositAccountBalance.value = currencyFormat(account.acc_balance);
+    depositAccountStatus.value = account.is_active ? "Active" : "Inactive";
+    depositAccountType.value = account.acc_type;
+  } else {
+    alert("Account not found!");
+  }
+});
+
+depositForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const currentAccountNumber = depositAccountNumber.value;
+
+  if (!currentAccountNumber) {
+    alert("Please search for an account first.");
+    return;
+  }
+const account  = await getAccountById(currentAccountNumber);
+  if (!account) {
+    alert("Account not found!");
+    return;
+  }
+  const depositData = {
+    acc_id: account.id,
+    acc_fname: account.f_name,
+    acc_lname: account.l_name,
+    acc_name: `${account.f_name} ${account.l_name}`,
+    transac_type: await getTransactionTypeId(depositType.value),
+    date_time: new Date().toISOString(),
+    amount: parseFloat(depositAmount.value),
+    transac_with: depositorName.value.trim(),
+    processed_by: await getProfileInfo().then(info => info.id ?? null),
+  };
+
+  const result = await insertTransaction(depositData);
+  if (result) {
+    alert("Deposit successful!");
+    await updateBalanceDeposit(account.id, depositData.amount);
+    refreshDepositContent();
+  }
+});
+
+async function initdepositReference() {
+  depositReference.value = await generateRefID();
+}
+initdepositReference();
+async function refreshDepositContent() {
+  depositSearch.value = "";
+  depositAccountTitle.value = "";
+  depositAccountName.value = "";
+  depositAccountNumber.value = "";
+  depositAccountBalance.value = "";
+  depositAccountStatus.value = "";
+  depositAccountType.value = "";
+  depositAmount.value = "";
+  depositorName.value = "";
+  depositReference.value = await generateRefID();
+}
+
+
+// Bank Balance
+export function getTransactionFilterValues() {
+  const keyword = document.getElementById('reference-filter').value;
+  const type = document.getElementById('transaction-type-filter').value;
+  const startDate = document.getElementById('start-date-filter').value;
+  const endDate = document.getElementById('end-date-filter').value;
+  return { keyword, type, startDate, endDate };
+}
+
+export async function refreshTransactionTable() {
+  const { keyword, type, startDate, endDate } = getTransactionFilterValues();
+  await getFilteredTransactions(keyword, type, startDate, endDate, 1);
+}
+
+let transactionTablesLoaded = false;
+document.querySelector('[data-content="bank-balance"]').addEventListener('click', async () => {
+  if (!transactionTablesLoaded) {
+    const { keyword, type, startDate, endDate } = getTransactionFilterValues();
+    await getFilteredTransactions(keyword, type, startDate, endDate, 1); // Reset to page 1 after any operation
+    transactionTablesLoaded = true;
+  }
+});
+
+document.getElementById('account-filter-btn').addEventListener('click', async (event) => {
+  const { keyword, type, startDate, endDate } = getTransactionFilterValues();
+  await getFilteredTransactions(keyword, type, startDate, endDate, 1); // Reset to page 1 after filter is applied
+});

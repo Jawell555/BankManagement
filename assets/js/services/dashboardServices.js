@@ -30,34 +30,35 @@ export function employeeIDFormat(id) {
 }
 //Sidebar
 
-export async function getProfileEmailAndName() {
+export async function getProfileInfo() {
   const { data: authData, error: authError } = await sb.auth.getUser();
 
   if (authError) {
-    console.error("getProfileEmailAndName auth:", authError.message);
+    console.error("getProfileInfo auth:", authError.message);
     return null;
   }
 
   const email = authData?.user?.email ?? null;
   if (!email) {
-    console.error("getProfileEmailAndName: no logged-in user email");
+    console.error("getProfileInfo: no logged-in user email");
     return null;
   }
 
   const { data: row, error: fullNameError } = await sb
     .from("employees_with_full_name")
-    .select("full_name")
+    .select("full_name, id")
     .eq("email", email)
     .maybeSingle();
 
   if (fullNameError) {
-    console.error("getProfileEmailAndName query:", fullNameError.message);
+    console.error("getProfileInfo query:", fullNameError.message);
     return null;
   }
 
   return {
     name: row?.full_name ?? "",
-    email
+    email,
+    id: row.id
   };
 }
 
@@ -341,7 +342,7 @@ export async function generateEmployeeID() {
   const { data, error } = await sb
     .from("employees")
     .select("id")
-    .order("id", { descending: true })
+    .order("id", { ascending: false })
     .limit(1)
     .maybeSingle();
 

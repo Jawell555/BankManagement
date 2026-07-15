@@ -169,7 +169,8 @@
             </div>
             <div class="modal" id="employee-view-modal">
                 <div class="modal-content">
-                    <button class="close" id="employee-view-close" onclick="closeEmployeeViewModal()"><i class="fas fa-times"></i></button>
+                    <button class="close" id="employee-view-close" onclick="closeEmployeeViewModal()"><i
+                            class="fas fa-times"></i></button>
                     <h2>Employee Details</h2>
                     <div class="modal-body">
                         <div class="categories">
@@ -215,7 +216,8 @@
             </div>
             <div class="modal" id="employee-edit-modal">
                 <div class="modal-content">
-                    <button class="close" id="employee-edit-close" onclick="closeEmployeeEditModal()"><i class="fas fa-times"></i></button>
+                    <button class="close" id="employee-edit-close" onclick="closeEmployeeEditModal()"><i
+                            class="fas fa-times"></i></button>
                     <h2>Employee Details</h2>
                     <div class="modal-body">
                         <div class="edit-form">
@@ -262,21 +264,24 @@
                             <label for="ved-date-updated"><strong>Date Updated:</strong></label>
                             <input type="text" id="ved-date-updated" value="Date Updated" readonly>
                         </div>
-                        
+
                     </div>
-                    <div class="modal-actions">                            
-                            <button class="save-btn" id="employee-edit-save">Save Changes</button>
-                        </div>
+                    <div class="modal-actions">
+                        <button class="save-btn" id="employee-edit-save">Save Changes</button>
+                    </div>
                 </div>
             </div>
             <div class="modal" id="employee-delete-modal">
                 <div class="modal-content">
-                    <button class="close" id="employee-delete-close" onclick="closeEmployeeDeleteModal()"><i class="fas fa-times"></i></button>
+                    <button class="close" id="employee-delete-close" onclick="closeEmployeeDeleteModal()"><i
+                            class="fas fa-times"></i></button>
                     <h2>Are you sure you want to delete this employee?</h2>
                     <p class="modal-message">This action cannot be undone.</p>
                     <div class="modal-actions">
-                        <button class="cancel-btn" id="employee-delete-cancel" onclick="closeEmployeeDeleteModal()">Cancel</button>
-                        <button class="delete-btn" id="employee-delete-confirm" onclick="confirmDeleteEmployee()">Delete</button>
+                        <button class="cancel-btn" id="employee-delete-cancel"
+                            onclick="closeEmployeeDeleteModal()">Cancel</button>
+                        <button class="delete-btn" id="employee-delete-confirm"
+                            onclick="confirmDeleteEmployee()">Delete</button>
                     </div>
                 </div>
             </div>
@@ -448,7 +453,8 @@
             </div>
             <div class="modal" id="account-view-modal">
                 <div class="modal-content">
-                    <button class="close" id="account-view-close" onclick="closeAccountViewModal()"><i class="fas fa-times"></i></button>
+                    <button class="close" id="account-view-close" onclick="closeAccountViewModal()"><i
+                            class="fas fa-times"></i></button>
                     <h2>Account Details</h2>
                     <div class="modal-body">
                         <div class="categories">
@@ -496,7 +502,8 @@
             </div>
             <div class="modal" id="account-edit-modal">
                 <div class="modal-content">
-                    <button class="close" id="account-edit-close" onclick="closeAccountEditModal()"><i class="fas fa-times"></i></button>
+                    <button class="close" id="account-edit-close" onclick="closeAccountEditModal()"><i
+                            class="fas fa-times"></i></button>
                     <h2>Account Details</h2>
                     <div class="modal-body">
                         <div class="edit-form">
@@ -530,7 +537,7 @@
                             <label for="vad-city"><strong>City:</strong></label>
                             <input type="text" id="vad-city" value="City" required>
                             <label for="vad-postal"><strong>Postal Code:</strong></label>
-                            <input type="text" id="vad-postal" value="Postal Code" required>                
+                            <input type="text" id="vad-postal" value="Postal Code" required>
                             <label for="vad-title"><strong>Account Title:</strong></label>
                             <input type="text" id="vad-title" value="Account Title" readonly>
                             <label for="vad-type"><strong>Account Type:</strong></label>
@@ -539,21 +546,22 @@
                                 <option value="Checking">Checking</option>
                             </select>
                         </div>
-                        
                     </div>
-                    <div class="modal-actions">                            
-                            <button class="save-btn" id="account-edit-save">Save Changes</button>
-                        </div>
+                    <div class="modal-actions">
+                        <button class="save-btn" id="account-edit-save">Save Changes</button>
+                    </div>
                 </div>
             </div>
             <div class="modal" id="account-delete-modal">
                 <div class="modal-content">
-                    <button class="close" id="account-delete-close" onclick="closeDeleteModal()"><i class="fas fa-times"></i></button>
+                    <button class="close" id="account-delete-close" onclick="closeAccountDeleteModal()"><i
+                            class="fas fa-times"></i></button>
                     <h2>Are you sure you want to delete this account?</h2>
                     <p class="modal-message">This action cannot be undone.</p>
                     <div class="modal-actions">
-                        <button class="cancel-btn" id="account-delete-cancel" onclick="closeDeleteModal()">Cancel</button>
-                        <button class="delete-btn" id="account-delete-confirm" onclick="confirmDeleteAccount()">Delete</button>
+                        <button class="cancel-btn" id="account-delete-cancel"
+                            onclick="closeAccountDeleteModal()">Cancel</button>
+                        <button class="delete-btn" id="account-delete-confirm">Delete</button>
                     </div>
                 </div>
             </div>
@@ -714,21 +722,23 @@
                     <input type="text" id="deposit-account-balance" placeholder="Current Balance" readonly>
                 </div>
             </div>
+            <form id="deposit-form">
             <div class="deposit-information">
+
                 <div class="info-group">
                     <label for="deposit-reference">Reference Number:</label>
                     <input type="text" id="deposit-reference" placeholder="REF0000000000001" readonly>
                 </div>
                 <div class="info-group">
-                    <label for="deposit-method">Deposit Method:</label>
-                    <select type="text" id="deposit-method" placeholder="Deposit Method">
-                        <option value="cash">Cash</option>
-                        <option value="check">Check</option>
+                    <label for="deposit-type">Deposit Method:</label>
+                    <select type="text" id="deposit-type" placeholder="Deposit Method">
+                        <option value="cash deposit">Cash</option>
+                        <option value="check deposit">Check</option>
                     </select>
                 </div>
                 <div class="info-group">
                     <label for="deposit-amount">Deposit Amount:</label>
-                    <input type="text" id="deposit-amount" placeholder="Deposit Amount">
+                    <input type="number"  id="deposit-amount" placeholder="Deposit Amount" required>
                 </div>
                 <div class="info-group">
                     <label for="deposit-live-datetime">Date & Time:</label>
@@ -736,12 +746,13 @@
                 </div>
                 <div class="info-group">
                     <label for="deposit-depositor-name">Depositor's Name:</label>
-                    <input type="text" id="deposit-depositor-name" placeholder="Depositor's Name">
+                    <input type="text" id="deposit-depositor-name" placeholder="Depositor's Name" required>
                 </div>
             </div>
             <div class="deposit-actions">
-                <button type="button" id="deposit-btn">Deposit</button>
+                <button type="submit" id="deposit-btn" name="deposit-form">Deposit</button>
             </div>
+            </form>
         </div>
 
         <div class="content" id="withdraw-operations">
@@ -789,8 +800,8 @@
                 <div class="info-group">
                     <label for="withdraw-method">Withdrawal Method:</label>
                     <select type="text" id="withdraw-method" placeholder="Withdrawal Method">
-                        <option value="cash">Cash</option>
-                        <option value="check">Check</option>
+                        <option value="cash withdrawal">Cash</option>
+                        <option value="check withdrawal">Check</option>
                     </select>
                 </div>
                 <div class="info-group">
@@ -883,8 +894,8 @@
                     <div class="info-group">
                         <label for="transfer-method">Transfer Method:</label>
                         <select type="text" id="transfer-method" placeholder="Transfer Method">
-                            <option value="cash">Internal Transfer</option>
-                            <option value="check">External Transfer</option>
+                            <option value="internal transfer">Internal Transfer</option>
+                            <option value="external transfer">External Transfer</option>
                         </select>
                     </div>
                     <div class="info-group">
@@ -920,17 +931,17 @@
                         <option value="Account Closure">Account Closure</option>
                     </optgroup>
                     <optgroup label="Deposit">
-                        <option value="All Deposit">All Deposits</option>
+                        <option value="Deposit">All Deposits</option>
                         <option value="Deposit - Cash">Cash Deposit</option>
                         <option value="Deposit - Check">Check Deposit</option>
                     </optgroup>
                     <optgroup label="Withdrawal">
-                        <option value="All Withdrawal">All Withdrawals</option>
+                        <option value="Withdrawal">All Withdrawals</option>
                         <option value="Withdrawal - Cash">Cash Withdrawal</option>
                         <option value="Withdrawal - Check">Check Withdrawal</option>
                     </optgroup>
                     <optgroup label="Transfer">
-                        <option value="All Transfer">All Transfers</option>
+                        <option value="Transfer">All Transfers</option>
                         <option value="Transfer - Internal">Internal Transfer</option>
                         <option value="Transfer - External">External Transfer</option>
                     </optgroup>
@@ -943,7 +954,7 @@
                 <button type="button" id="account-filter-btn">Filter</button>
             </div>
 
-            <div class="bank-table">
+            <div class="transaction-table">
                 <table>
                     <thead>
                         <tr>
@@ -957,7 +968,7 @@
                             <th>Amount</th>
                         </tr>
                     </thead>
-                    <tbody id="account-table-body">
+                    <tbody id="transaction-table-body">
                         <tr>
                             <td>REF000000000001</td>
                             <td>John Doe</td>
