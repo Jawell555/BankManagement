@@ -127,7 +127,7 @@ const totalCurrentEl = document.getElementById("current-accounts");
 const totalBankBalanceEl = document.getElementById("bank-balance-amount");
 const totalBankDepositEl = document.getElementById("deposit-total");
 const totalBankWithdrawEl = document.getElementById("withdraw-total");
-const totalBankTransactionsEl = document.getElementById("transacted-total");
+const totalBankTransactionsEl = document.getElementById("external-transaction-total");
 
 const stats = await loadDashboardStats();
 
@@ -818,7 +818,7 @@ async function refreshWithdrawContent() {
 }
 
 import { formatExternalBankID, getExternalAccountById, getExternalBankIDFromString } from '../services/dummyExternalServices.js';
-import { getTellerTransferFee } from '../services/transactionServices.js';
+import { getTellerTransferFee, stringToAmount } from '../services/transactionServices.js';
 
 const senderSearch = document.getElementById("sender-account-search");
 const receiverSearch = document.getElementById("receiver-account-search");
@@ -955,6 +955,14 @@ transferForm.addEventListener("submit", async (event) => {
     return;
   }
 
+  const amount = stringToAmount(transferTotal.textContent) || 0;
+  
+  console.log("Transfer Amount:", { amount });
+  if (amount <= 100) {
+    alert("Please enter a valid transfer amount.");
+    return;
+  }
+
   const transferData = {
     acc_id: senderAccount.id,
     acc_fname: senderAccount.f_name,
@@ -962,34 +970,65 @@ transferForm.addEventListener("submit", async (event) => {
     acc_name: `${senderAccount.f_name} ${senderAccount.l_name}`,
     transac_type: await getTransactionTypeId(transferType.value),
     date_time: new Date().toISOString(),
-    amount: parseFloat(transferAmount.value) || 0,
-    transac_with: receiverAccount.id,
+    amount: amount,
+    transac_with: receiverAccountNumber.value,
     processed_by: profile?.id ?? null,
   };
 
-  const { data, error } = await sb.functions.invoke("transfer-funds", {
-    body: {
-      senderAccountId: senderAccount.id,
-      receiverAccountId: receiverAccount.id,
-      amount: transferAmount.value,
-    },
-  });
+  if (transferType.value === "internal transfer") {
+    const { data, error } = await sb.functions.invoke("transfer-funds", {
+      body: {
+        senderAccountId: senderAccount.id,
+        receiverAccountId: receiverAccount.id,
+        amount: amount,
+      },
+    });
+    
 
-  if (error) {
-    const response = await error.context?.json().catch(() => null);
+    if (error) {
+      const response = await error.context?.json().catch(() => null);
 
-    console.error("Transfer failed:", {
-      message: error.message,
-      response,
+      console.error("Transfer failed:", {
+        message: error.message,
+        response,
+      });
+
+      alert(response?.error ?? error.message);
+      return;
+    }
+
+    console.log("Transfer succeeded:", data);
+    alert("Transfer successful!");
+    const result = await insertTransaction(transferData);
+  } else {
+    const { data, error } = await sb.functions.invoke("transfer-to-external", {
+      body: {
+        senderAccountId: senderAccount.id,
+        externalBankId: receiverAccount.id,
+        amount: amount,
+      },
     });
 
-    alert(response?.error ?? error.message);
-    return;
+    if (error) {
+      const response = await error.context?.json().catch(() => null);
+
+      console.error("Transfer failed:", {
+        message: error.message,
+        response,
+      });
+
+      alert(response?.error ?? error.message);
+      return;
+    }
+
+    console.log("Transfer succeeded:", data);
+    alert("Transfer successful!");
+    const result = await insertTransaction(transferData);
   }
 
-  console.log("Transfer succeeded:", data);
-  alert("Transfer successful!");
-  const result = await insertTransaction(transferData);
+
+
+
 
   await refreshTransferContent();
 

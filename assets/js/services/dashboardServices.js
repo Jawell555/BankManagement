@@ -91,7 +91,7 @@ export async function loadDashboardStats() {
 
   const { data: totalWithdraw, error: totalWithdrawErr } = await sb.rpc('get_total_withdraw');
 
-  const { data: totalBankTransactions, error: totalBankTransactionsErr } = await sb.rpc('get_total_transactions');
+  const { data: totalBankTransactions, error: totalBankTransactionsErr } = await sb.rpc('get_total_external_transactions');
 
 
   if (totalBalanceErr) console.error("totalBalanceErr:", totalBalanceErr.message);
@@ -486,4 +486,19 @@ export async function updateEmployee(employeeID, updatedData) {
   }
 
   return data;
+}
+
+export async function getEmployeeNameById(id) {
+  const { data, error } = await sb
+    .from("employees_with_full_name")
+    .select("full_name")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    console.error("getEmployeeNameById:", error.message);
+    return null;
+  }
+
+  return data ? data.full_name : null;
 }

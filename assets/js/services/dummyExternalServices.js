@@ -1,6 +1,6 @@
 import {supabase as sb} from '../config/app.js';
 
-export async function formatExternalBankID(bankID) {
+export function formatExternalBankID(bankID) {
     const extIDStr = bankID.toString().padStart(12, '0');
     const prefix = 'OTH' + (extIDStr.length < 12 ? '0'.repeat(12 - extIDStr.length) : '');
     return prefix + extIDStr;

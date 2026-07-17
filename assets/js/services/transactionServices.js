@@ -1,6 +1,12 @@
 import { supabase as sb } from '../config/app.js';
 import { accountIDFormat, getAccNumberIDFromString } from './accountServices.js';
-import { currencyFormat, employeeIDFormat } from './dashboardServices.js';
+import { currencyFormat, employeeIDFormat, getEmployeeNameById } from './dashboardServices.js';
+
+export function stringToAmount(str) {
+  const cleanAmountString = str.replace(/[₱,\s]/g, "");
+  const amount = parseFloat(cleanAmountString);
+  return Number.isNaN(amount) ? 0 : amount;
+}
 
 export async function generateRefID() {
   const { data, error } = await sb
@@ -124,7 +130,7 @@ export async function getFilteredTransactions(
         ? new Date(transaction.date_time).toLocaleString()
         : ""}
       </td>
-      <td>${await employeeIDFormat(transaction.processed_by) ?? ""}</td>
+      <td>${await getEmployeeNameById(transaction.processed_by) ?? ""}</td>
       <td>${currencyFormat(transaction.amount ?? 0)}</td>
     `;
 

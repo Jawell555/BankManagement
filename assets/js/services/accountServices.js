@@ -1,7 +1,9 @@
 import { supabase as sb } from '../config/app.js';
 import { currencyFormat, getGenderDesc, getMaritalStatusDesc, getNumberIDFromString } from './dashboardServices.js';
 import { getCurrentAccountFilterValues, refreshAccountsTable } from '../controllers/dashboard.js';
-
+import { getGenderID, getMaritalStatusID, getProfileInfo } from './dashboardServices.js';
+import { insertTransaction } from './transactionServices.js';
+const profile = await getProfileInfo();
 export function accountIDFormat(id) {
   const idStr = id.toString();
   const prefix = 'ACC' + (idStr.length < 12 ? '0'.repeat(12 - idStr.length) : '');
@@ -365,11 +367,36 @@ async function openAccountDeleteModal(formattedID) {
     document.getElementById("account-delete-modal").classList.add("show");
     const accDeleteBtn = document.getElementById("account-delete-confirm");
 
+
+
     accDeleteBtn.onclick = async () => {
+      const account = await getAccountById(formattedID);
+      if (!account) {
+        console.error("Account data not found for ID:", formattedID);
+        return;
+      }
       await updateAccountIsActiveOff(formattedID);
       alert("Account deleted successfully!");
-      closeAccountDeleteModal();
-      await refreshAccountsTable();
+
+      const closingAccData = {
+        acc_id: account.id,
+        acc_fname: account.f_name,
+        acc_lname: account.l_name,
+        acc_name: `${account.f_name} ${account.l_name}`,
+        transac_type: 2,
+        date_time: new Date().toISOString(),
+        amount: account.acc_balance,
+        transac_with: "System",
+        processed_by: profile.id ?? null,
+      };
+
+      const result = await insertTransaction(closingAccData);
+      if (result) {
+        alert("Account closed successfully!");
+        await updateBalanceWithdraw(account.id, closingAccData.amount);
+        closeAccountDeleteModal();
+        await refreshAccountsTable();
+      }
     }
   } catch (error) {
     console.error("openAccountDeleteModal:", error.message);
@@ -380,8 +407,6 @@ window.closeAccountDeleteModal = () => {
   document.getElementById("account-delete-modal").classList.remove("show");
 }
 
-import { getGenderID, getMaritalStatusID, getProfileInfo } from './dashboardServices.js';
-import { insertTransaction } from './transactionServices.js';
 
 export async function createAccount(accountData) {
   const { data, error } = await sb
@@ -406,7 +431,7 @@ export async function createAccount(accountData) {
       transac_type: 1,
       date_time: newAccount.created_at,
       amount: parseFloat(newAccount.acc_balance),
-      processed_by: await getProfileInfo().then(info => info.id ?? null),
+      processed_by: profile.id ?? null,
     };
     await insertTransaction(transactionData);
   }
