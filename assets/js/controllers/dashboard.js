@@ -1,7 +1,6 @@
 import { getProfileInfo } from '../services/dashboardServices.js';
 import { loadDashboardStats } from '../services/dashboardServices.js';
 import { initDashboardData } from '../services/dashboardServices.js';
-// import { getEmployeesTable } from '../services/dashboardServices.js';
 import { employeeFilter, updateEmployeeStatusOff } from '../services/dashboardServices.js';
 import { employeeIDFormat, getEmployeeByID, getMaritalStatusDesc, getGenderDesc, getEmployeeType } from '../services/dashboardServices.js';
 import { generateEmployeeID } from '../services/dashboardServices.js';
@@ -9,7 +8,6 @@ import { createEmployee } from '../services/dashboardServices.js';
 import { getEmployeeTypeId } from '../services/dashboardServices.js';
 import { getGenderID } from '../services/dashboardServices.js';
 import { getMaritalStatusID } from '../services/dashboardServices.js';
-// import { getAccountsTable } from '../services/accountServices.js';
 import { accountsFilter, accountIDFormat } from '../services/accountServices.js';
 import {
   generateAccountID,
@@ -848,18 +846,16 @@ const transferTotal = document.getElementById("transfer-total");
 let senderAccount = null;
 let receiverAccount = null;
 
-// ===================================
 // Generate Reference Number
-// ===================================
 
 document.querySelector('[data-content="transfer-operations"]').addEventListener("click", async () => {
   await refreshTransferContent();
   await initializeTransferForm();
 });
 
-// ===================================
+
 // Update Transfer Fee & Total
-// ===================================
+
 
 function updateTransferTotals() {
   const amount = parseFloat(transferAmount.value) || 0;
@@ -881,9 +877,8 @@ function updateTransferTotals() {
 transferType.addEventListener("change", updateTransferTotals);
 transferAmount.addEventListener("input", updateTransferTotals);
 
-// ===================================
+
 // Search Accounts
-// ===================================
 
 document.getElementById("transfer-search-btn").addEventListener("click", async (event) => {
   event.preventDefault();
@@ -938,9 +933,7 @@ document.getElementById("transfer-search-btn").addEventListener("click", async (
   }
 });
 
-// ===================================
 // Submit Transfer
-// ===================================
 
 transferForm.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -956,7 +949,7 @@ transferForm.addEventListener("submit", async (event) => {
   }
 
   const amount = stringToAmount(transferTotal.textContent) || 0;
-  
+
   console.log("Transfer Amount:", { amount });
   if (amount <= 100) {
     alert("Please enter a valid transfer amount.");
@@ -983,7 +976,7 @@ transferForm.addEventListener("submit", async (event) => {
         amount: amount,
       },
     });
-    
+
 
     if (error) {
       const response = await error.context?.json().catch(() => null);
@@ -1105,4 +1098,51 @@ document.querySelector('[data-content="bank-balance"]').addEventListener('click'
 document.getElementById('transaction-filter-btn').addEventListener('click', async (event) => {
   const { keyword, type, startDate, endDate } = getTransactionFilterValues();
   await getFilteredTransactions(keyword, type, startDate, endDate, 1); // Reset to page 1 after filter is applied
+});
+
+//change password
+import { updatePassword, closeModal } from '../services/userServices.js';
+
+const changePasswordBtn = document.getElementById("change-password-btn");
+const changePasswordModal = document.getElementById("change-password-modal");
+
+changePasswordBtn.addEventListener("click", () => {
+  changePasswordModal.classList.add("show");
+});
+
+const closeChangePasswordModalBtn = document.getElementById("change-password-close");
+
+closeChangePasswordModalBtn.addEventListener("click", () => {
+  closeModal('change-password-modal');
+});
+
+const changePasswordForm = document.getElementById('change-password-form');
+
+changePasswordForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  // 1. Grab inputs from the DOM
+  const currentPasswordInput = document.getElementById('current-password');
+  const newPasswordInput = document.getElementById('new-password');
+  const confirmPasswordInput = document.getElementById('confirm-password');
+
+  // 2. Call the exported service function
+  const result = await updatePassword(
+    currentPasswordInput.value,
+    newPasswordInput.value,
+    confirmPasswordInput.value
+  );
+
+  // 3. Alert the user with the result message
+  alert(result.message);
+
+  if (result.success) {
+    // 4. Clear the input fields on success
+    currentPasswordInput.value = '';
+    newPasswordInput.value = '';
+    confirmPasswordInput.value = '';
+
+    // 5. Close the modal
+    closeModal('change-password-modal');
+  }
 });

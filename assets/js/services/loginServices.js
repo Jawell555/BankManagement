@@ -9,10 +9,10 @@ export async function validateLogin(username, password) {
         alert('Please enter both username and password.');
         return false;
     }
-    // if (!(await isUserActive(username))) {
-    //     alert('User is not active.');
-    //     return false;
-    // }
+    if (!(await isUserActive(username))) {
+        alert('User is not active.');
+        return false;
+    }
 
     const { data, error } = await sb.auth.signInWithPassword({
         email: username,

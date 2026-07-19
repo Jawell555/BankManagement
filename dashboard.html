@@ -710,35 +710,35 @@
                 </div>
             </div>
             <form id="deposit-form">
-            <div class="deposit-information">
+                <div class="deposit-information">
 
-                <div class="info-group">
-                    <label for="deposit-reference">Reference Number:</label>
-                    <input type="text" id="deposit-reference" placeholder="" readonly>
+                    <div class="info-group">
+                        <label for="deposit-reference">Reference Number:</label>
+                        <input type="text" id="deposit-reference" placeholder="" readonly>
+                    </div>
+                    <div class="info-group">
+                        <label for="deposit-type">Deposit Method:</label>
+                        <select type="text" id="deposit-type" placeholder="Deposit Method">
+                            <option value="cash deposit">Cash</option>
+                            <option value="check deposit">Check</option>
+                        </select>
+                    </div>
+                    <div class="info-group">
+                        <label for="deposit-amount">Deposit Amount:</label>
+                        <input type="number" id="deposit-amount" placeholder="Deposit Amount" required>
+                    </div>
+                    <div class="info-group">
+                        <label for="deposit-live-datetime">Date & Time:</label>
+                        <input type="text" id="deposit-live-datetime" placeholder="Date & Time" readonly>
+                    </div>
+                    <div class="info-group">
+                        <label for="deposit-depositor-name">Depositor's Name:</label>
+                        <input type="text" id="deposit-depositor-name" placeholder="Depositor's Name" required>
+                    </div>
                 </div>
-                <div class="info-group">
-                    <label for="deposit-type">Deposit Method:</label>
-                    <select type="text" id="deposit-type" placeholder="Deposit Method">
-                        <option value="cash deposit">Cash</option>
-                        <option value="check deposit">Check</option>
-                    </select>
+                <div class="deposit-actions">
+                    <button type="submit" id="deposit-btn" name="deposit-form">Deposit</button>
                 </div>
-                <div class="info-group">
-                    <label for="deposit-amount">Deposit Amount:</label>
-                    <input type="number"  id="deposit-amount" placeholder="Deposit Amount" required>
-                </div>
-                <div class="info-group">
-                    <label for="deposit-live-datetime">Date & Time:</label>
-                    <input type="text" id="deposit-live-datetime" placeholder="Date & Time" readonly>
-                </div>
-                <div class="info-group">
-                    <label for="deposit-depositor-name">Depositor's Name:</label>
-                    <input type="text" id="deposit-depositor-name" placeholder="Depositor's Name" required>
-                </div>
-            </div>
-            <div class="deposit-actions">
-                <button type="submit" id="deposit-btn" name="deposit-form">Deposit</button>
-            </div>
             </form>
         </div>
 
@@ -780,34 +780,34 @@
                 </div>
             </div>
             <form id="withdraw-form">
-            <div class="withdraw-information">
-                <div class="info-group">
-                    <label for="withdraw-reference">Reference Number:</label>
-                    <input type="text" id="withdraw-reference" placeholder="" readonly>
+                <div class="withdraw-information">
+                    <div class="info-group">
+                        <label for="withdraw-reference">Reference Number:</label>
+                        <input type="text" id="withdraw-reference" placeholder="" readonly>
+                    </div>
+                    <div class="info-group">
+                        <label for="withdraw-type">Withdrawal Method:</label>
+                        <select type="text" id="withdraw-type" placeholder="Withdrawal Method">
+                            <option value="cash withdrawal">Cash</option>
+                            <option value="check withdrawal">Check</option>
+                        </select>
+                    </div>
+                    <div class="info-group">
+                        <label for="withdraw-amount">Withdrawal Amount:</label>
+                        <input type="text" id="withdraw-amount" placeholder="Withdrawal Amount">
+                    </div>
+                    <div class="info-group">
+                        <label for="withdraw-live-datetime">Date & Time:</label>
+                        <input type="text" id="withdraw-live-datetime" placeholder="Date & Time" readonly>
+                    </div>
+                    <div class="info-group">
+                        <label for="withdraw-withdrawer-name">Withdrawer's Name:</label>
+                        <input type="text" id="withdraw-withdrawer-name" placeholder="Withdrawer's Name">
+                    </div>
                 </div>
-                <div class="info-group">
-                    <label for="withdraw-type">Withdrawal Method:</label>
-                    <select type="text" id="withdraw-type" placeholder="Withdrawal Method">
-                        <option value="cash withdrawal">Cash</option>
-                        <option value="check withdrawal">Check</option>
-                    </select>
+                <div class="withdraw-actions">
+                    <button type="submit" id="withdraw-btn" name="withdraw-form">Withdraw</button>
                 </div>
-                <div class="info-group">
-                    <label for="withdraw-amount">Withdrawal Amount:</label>
-                    <input type="text" id="withdraw-amount" placeholder="Withdrawal Amount">
-                </div>
-                <div class="info-group">
-                    <label for="withdraw-live-datetime">Date & Time:</label>
-                    <input type="text" id="withdraw-live-datetime" placeholder="Date & Time" readonly>
-                </div>
-                <div class="info-group">
-                    <label for="withdraw-withdrawer-name">Withdrawer's Name:</label>
-                    <input type="text" id="withdraw-withdrawer-name" placeholder="Withdrawer's Name">
-                </div>
-            </div>
-            <div class="withdraw-actions">
-                <button type="submit" id="withdraw-btn" name="withdraw-form">Withdraw</button>
-            </div>
             </form>
         </div>
 
@@ -875,173 +875,191 @@
                 </div>
             </div>
             <form id="transfer-form">
-            <div class="transfer-details">
-                <div class="transaction-details">
-                    <div class="info-group">
-                        <label for="transfer-reference">Reference Number:</label>
-                        <input type="text" id="transfer-reference" placeholder="" readonly>
+                <div class="transfer-details">
+                    <div class="transaction-details">
+                        <div class="info-group">
+                            <label for="transfer-reference">Reference Number:</label>
+                            <input type="text" id="transfer-reference" placeholder="" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label for="transfer-type">Transfer Method:</label>
+                            <select type="text" id="transfer-type" placeholder="Transfer Method">
+                                <option value="internal transfer">Internal Transfer</option>
+                                <option value="external transfer">External Transfer</option>
+                            </select>
+                        </div>
+                        <div class="info-group">
+                            <label for="transfer-live-datetime">Date & Time:</label>
+                            <input type="text" id="transfer-live-datetime" placeholder="Date & Time" readonly>
+                        </div>
+                        <div class="info-group">
+                            <label for="transfer-amount">Transfer Amount:</label>
+                            <input type="text" id="transfer-amount" placeholder="Transfer Amount">
+                        </div>
                     </div>
-                    <div class="info-group">
-                        <label for="transfer-type">Transfer Method:</label>
-                        <select type="text" id="transfer-type" placeholder="Transfer Method">
-                            <option value="internal transfer">Internal Transfer</option>
-                            <option value="external transfer">External Transfer</option>
-                        </select>
+                    <div class="transfer-total">
+                        <h1>Transfer Fee: <span id="transfer-fee">₱0.00</span></h1>
+                        <h1>Total Transfer Amount: <span id="transfer-total">₱0.00</span></h1>
+                        <div class="transfer-actions">
+                            <button type="submit" id="transfer-btn" name="transfer-form">Transfer</button>
+                        </div>
                     </div>
-                    <div class="info-group">
-                        <label for="transfer-live-datetime">Date & Time:</label>
-                        <input type="text" id="transfer-live-datetime" placeholder="Date & Time" readonly>
-                    </div>
-                    <div class="info-group">
-                        <label for="transfer-amount">Transfer Amount:</label>
-                        <input type="text" id="transfer-amount" placeholder="Transfer Amount">
-                    </div>
-                </div>
-                <div class="transfer-total">
-                    <h1>Transfer Fee: <span id="transfer-fee">₱0.00</span></h1>
-                    <h1>Total Transfer Amount: <span id="transfer-total">₱0.00</span></h1>
-                    <div class="transfer-actions">
-                        <button type="submit" id="transfer-btn" name="transfer-form">Transfer</button>
-                    </div>
-                </div>
             </form>
+        </div>
+    </div>
+
+    <div class="content" id="bank-balance">
+        <h1>Bank Balance</h1>
+        <div class="filter">
+            <div class="search">
+                <input type="text" id="reference-filter" placeholder="Enter ID No. or Name">
+                <i class="fas fa-search search-icon"></i>
             </div>
+            <select id="transaction-type-filter">
+                <option value="all">All Types</option>
+                <optgroup label="Account Creation & Closure">
+                    <option value="account creation">Account Creation</option>
+                    <option value="account closure">Account Closure</option>
+                </optgroup>
+                <optgroup label="Deposit">
+                    <option value="deposit">All Deposits</option>
+                    <option value="cash deposit">Cash Deposit</option>
+                    <option value="check deposit">Check Deposit</option>
+                </optgroup>
+                <optgroup label="Withdrawal">
+                    <option value="withdrawal">All Withdrawals</option>
+                    <option value="cash withdrawal">Cash Withdrawal</option>
+                    <option value="check withdrawal">Check Withdrawal</option>
+                </optgroup>
+                <optgroup label="Transfer">
+                    <option value="transfer">All Transfers</option>
+                    <option value="internal transfer">Internal Transfer</option>
+                    <option value="external transfer">External Transfer</option>
+                </optgroup>
+            </select>
+            <label for="start-date-filter">Start Date:</label>
+            <input type="date" id="start-date-filter" placeholder="Select Date">
+            <label for="end-date-filter">End Date:</label>
+            <input type="date" id="end-date-filter" placeholder="Select End Date">
+
+            <button type="button" id="transaction-filter-btn">Filter</button>
         </div>
 
-        <div class="content" id="bank-balance">
-            <h1>Bank Balance</h1>
-            <div class="filter">
-                <div class="search">
-                    <input type="text" id="reference-filter" placeholder="Enter ID No. or Name">
-                    <i class="fas fa-search search-icon"></i>
-                </div>
-                <select id="transaction-type-filter">
-                    <option value="all">All Types</option>
-                    <optgroup label="Account Creation & Closure">
-                        <option value="account creation">Account Creation</option>
-                        <option value="account closure">Account Closure</option>
-                    </optgroup>
-                    <optgroup label="Deposit">
-                        <option value="deposit">All Deposits</option>
-                        <option value="cash deposit">Cash Deposit</option>
-                        <option value="check deposit">Check Deposit</option>
-                    </optgroup>
-                    <optgroup label="Withdrawal">
-                        <option value="withdrawal">All Withdrawals</option>
-                        <option value="cash withdrawal">Cash Withdrawal</option>
-                        <option value="check withdrawal">Check Withdrawal</option>
-                    </optgroup>
-                    <optgroup label="Transfer">
-                        <option value="transfer">All Transfers</option>
-                        <option value="internal transfer">Internal Transfer</option>
-                        <option value="external transfer">External Transfer</option>
-                    </optgroup>
-                </select>
-                <label for="start-date-filter">Start Date:</label>
-                <input type="date" id="start-date-filter" placeholder="Select Date">
-                <label for="end-date-filter">End Date:</label>
-                <input type="date" id="end-date-filter" placeholder="Select End Date">
-
-                <button type="button" id="transaction-filter-btn">Filter</button>
-            </div>
-
-            <div class="transaction-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Reference Number</th>
-                            <th>Account Number</th>
-                            <th>Account Name</th>
-                            <th>Transaction Type</th>
-                            <th>Transact With</th>
-                            <th>Date & Time</th>
-                            <th>Processed By</th>
-                            <th>Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody id="transaction-table-body">
-                    </tbody>
-                </table>
-            </div>
-            <div class="pagination-controls" id="transaction-pagination-controls">
-                <button id="transaction-btn-prev" onclick="prevPage()"><i class="fas fa-chevron-left"></i></button>
-                <div id="transaction-page-numbers">X</div>
-                <button id="transaction-btn-next" onclick="nextPage()"><i class="fas fa-chevron-right"></i></button>
-            </div>
-
+        <div class="transaction-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Reference Number</th>
+                        <th>Account Number</th>
+                        <th>Account Name</th>
+                        <th>Transaction Type</th>
+                        <th>Transact With</th>
+                        <th>Date & Time</th>
+                        <th>Processed By</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="transaction-table-body">
+                </tbody>
+            </table>
         </div>
-
-        <div class="content" id="account-profile">
-            <div class="account-profile-header">
-                <h1>Account Profile</h1>
-                <input type="text" id="profile-employee-id" name="profile-employee-id" value="EMP000000001" readonly>
-            </div>
-            <div class="user-profile">
-                <div class="user-profile-image">
-                    <h2>Profile Picture</h2>
-                    <img src="assets/src/profile.png" alt="Profile Picture" class="profile-pic">
-                </div>
-                <div class="personal-info">
-                    <h2>Personal Information</h2>
-                    <div class="profile-group">
-                        <label for="profile-employee-name">Name</label>
-                        <input type="text" id="profile-employee-name" name="profile-employee-name" value="John Doe"
-                            readonly>
-                    </div>
-                    <div class="profile-group">
-                        <label for="profile-employee-birth">Date of Birth</label>
-                        <input type="date" id="profile-employee-birth" name="profile-employee-birth" value="1990-01-01"
-                            readonly>
-                    </div>
-                    <div class="profile-group">
-                        <label for="profile-employee-gender">Gender</label>
-                        <input type="text" id="profile-employee-gender" name="profile-employee-gender" value="Male"
-                            readonly>
-                    </div>
-                    <div class="profile-group">
-                        <label for="profile-employee-marital">Marital Status</label>
-                        <input type="text" id="profile-employee-marital" name="profile-employee-marital" value="Single"
-                            readonly>
-                    </div>
-                    <div class="profile-group">
-                        <label for="profile-employee-email">Email</label>
-                        <input type="email" id="profile-employee-email" name="profile-employee-email"
-                            value="john.doe@example.com" readonly>
-                    </div>
-                    <div class="profile-group">
-                        <label for="profile-employee-contact">Contact Number</label>
-                        <input type="text" id="profile-employee-contact" name="profile-employee-contact"
-                            value="09XXXXXXXXX" readonly>
-                    </div>
-                </div>
-                <div class="address">
-                    <h2>Address</h2>
-                    <div class="profile-group">
-                        <label for="profile-employee-postal">Postal Code</label>
-                        <input type="text" id="profile-employee-postal" name="profile-employee-postal" value="12345"
-                            readonly>
-                    </div>
-                    <div class="profile-group">
-                        <label for="profile-employee-address">Home Address</label>
-                        <input type="text" id="profile-employee-address" name="profile-employee-address"
-                            value="123 Main Street" readonly>
-                    </div>
-                    <div class="profile-group">
-                        <label for="profile-employee-city">City</label>
-                        <input type="text" id="profile-employee-city" name="profile-employee-city" value="Anytown"
-                            readonly>
-                    </div>
-                </div>
-                <div class="change-password">
-                    <button id="change-password-btn">Change Password</button>
-                </div>
-            </div>
+        <div class="pagination-controls" id="transaction-pagination-controls">
+            <button id="transaction-btn-prev" onclick="prevPage()"><i class="fas fa-chevron-left"></i></button>
+            <div id="transaction-page-numbers">X</div>
+            <button id="transaction-btn-next" onclick="nextPage()"><i class="fas fa-chevron-right"></i></button>
         </div>
 
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="assets/js/config/app.js"></script>
-    <script type="module" src="assets/js/controllers/dashboard.js"></script>
+
+    <div class="content" id="account-profile">
+        <div class="account-profile-header">
+            <h1>Account Profile</h1>
+            <input type="text" id="profile-employee-id" name="profile-employee-id" value="EMP000000001" readonly>
+        </div>
+        <div class="user-profile">
+            <div class="user-profile-image">
+                <h2>Profile Picture</h2>
+                <img src="assets/src/profile.png" alt="Profile Picture" class="profile-pic">
+            </div>
+            <div class="personal-info">
+                <h2>Personal Information</h2>
+                <div class="profile-group">
+                    <label for="profile-employee-name">Name</label>
+                    <input type="text" id="profile-employee-name" name="profile-employee-name" value="John Doe"
+                        readonly>
+                </div>
+                <div class="profile-group">
+                    <label for="profile-employee-birth">Date of Birth</label>
+                    <input type="date" id="profile-employee-birth" name="profile-employee-birth" value="1990-01-01"
+                        readonly>
+                </div>
+                <div class="profile-group">
+                    <label for="profile-employee-gender">Gender</label>
+                    <input type="text" id="profile-employee-gender" name="profile-employee-gender" value="Male"
+                        readonly>
+                </div>
+                <div class="profile-group">
+                    <label for="profile-employee-marital">Marital Status</label>
+                    <input type="text" id="profile-employee-marital" name="profile-employee-marital" value="Single"
+                        readonly>
+                </div>
+                <div class="profile-group">
+                    <label for="profile-employee-email">Email</label>
+                    <input type="email" id="profile-employee-email" name="profile-employee-email"
+                        value="john.doe@example.com" readonly>
+                </div>
+                <div class="profile-group">
+                    <label for="profile-employee-contact">Contact Number</label>
+                    <input type="text" id="profile-employee-contact" name="profile-employee-contact" value="09XXXXXXXXX"
+                        readonly>
+                </div>
+            </div>
+            <div class="address">
+                <h2>Address</h2>
+                <div class="profile-group">
+                    <label for="profile-employee-postal">Postal Code</label>
+                    <input type="text" id="profile-employee-postal" name="profile-employee-postal" value="12345"
+                        readonly>
+                </div>
+                <div class="profile-group">
+                    <label for="profile-employee-address">Home Address</label>
+                    <input type="text" id="profile-employee-address" name="profile-employee-address"
+                        value="123 Main Street" readonly>
+                </div>
+                <div class="profile-group">
+                    <label for="profile-employee-city">City</label>
+                    <input type="text" id="profile-employee-city" name="profile-employee-city" value="Anytown" readonly>
+                </div>
+            </div>
+            <div class="change-password">
+                <button id="change-password-btn">Change Password</button>
+            </div>
+        </div>
+        <div class="modal" id="change-password-modal">
+            <div class="modal-content">
+                <button class="close" id="change-password-close"><i class="fas fa-times"></i></button>
+                <h2>Account Details</h2>
+                <div class="modal-body">
+                    <form id="change-password-form">
+                        <div class="edit-form">
+                            <label for="current-password"><strong>Current Password:</strong></label>
+                            <input type="password" id="current-password" value="" required>
+                            <label for="new-password"><strong>New Password:</strong></label>
+                            <input type="password" id="new-password" value="" required>
+                            <label for="confirm-password"><strong>Confirm New Password:</strong></label>
+                            <input type="password" id="confirm-password" value="" required>
+                        </div>
+                        <div class="modal-actions">
+                            <button type="submit" class="save-btn" id="change-password-save" >Change Password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script type="module" src="assets/js/config/app.js"></script>
+        <script type="module" src="assets/js/controllers/dashboard.js"></script>
 </body>
 
 </html>

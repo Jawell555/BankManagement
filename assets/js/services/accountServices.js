@@ -38,42 +38,6 @@ export function getAccNumberIDFromString(str) {
   return Number.isNaN(n) ? null : n;
 }
 
-// export async function getAccountsTable() {
-//   const tbody = document.getElementById("account-table-body");
-//   if (!tbody) return;
-
-//   const { data, error } = await sb
-//     .from("accounts")
-//     .select("id, f_name, l_name, email, contact_no, acc_type, created_at")
-//     .order("created_at", { ascending: false });
-
-//   if (error) {
-//     console.error("getAllAccountsTable:", error.message);
-//     return;
-//   }
-
-//   tbody.innerHTML = "";
-
-//   for (const acc of (data ?? [])) {
-//     const accType = await getAccountType(acc.acc_type);
-
-//     const tr = document.createElement("tr");
-//     tr.innerHTML = `
-//           <td>${accountIDFormat(acc.id) ?? ""}</td>
-//           <td>${acc.f_name ?? ""} ${acc.l_name ?? ""}</td>
-//           <td>${acc.email ?? ""}</td>
-//           <td>${acc.contact_no ?? ""}</td>
-//           <td>${accType ?? ""}</td>
-//           <td>${acc.created_at ? new Date(acc.created_at).toLocaleString() : ""}</td>
-//           <td>
-//             <button class="view-btn" id="view-btn-${acc.id}">View</button>
-//             <button class="edit-btn" id="edit-btn-${acc.id}">Edit</button>
-//             <button class="delete-btn" id="delete-btn-${acc.id}">Delete</button>
-//           </td>
-//         `;
-//     tbody.appendChild(tr);
-//   }
-// }
 const accPageNumber = document.getElementById("acc-page-numbers");
 let currentAccPage = 1;
 const ACC_PAGE_SIZE = 10;

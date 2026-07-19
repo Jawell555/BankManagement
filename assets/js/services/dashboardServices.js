@@ -199,42 +199,6 @@ export async function getEmployeeTypeId(emp_desc) {
   return data?.id ?? 0;
 }
 
-// export async function getEmployeesTable() {
-//   const tbody = document.getElementById("employee-table-body");
-//   if (!tbody) return;
-
-//   const { data, error } = await sb
-//     .from("employees")
-//     .select("id, first_name, last_name, email, contact_no, created_at")
-//     .order("created_at", { ascending: false })
-//     .eq("is_active", true);
-
-//   if (error) {
-//     console.error("getEmployeesTable:", error.message);
-//     return;
-//   }
-
-//   tbody.innerHTML = "";
-
-//   for (const emp of (data ?? [])) {
-//     const empType = await getEmployeeType(emp.employee_type);
-
-//     const tr = document.createElement("tr");
-//     tr.innerHTML = `
-//       <td>${employeeIDFormat(emp.id) ?? ""}</td>
-//       <td>${emp.first_name ?? ""} ${emp.last_name ?? ""}</td>
-//       <td>${emp.email ?? ""}</td>
-//       <td>${emp.contact_no ?? ""}</td>
-//       <td>${emp.created_at ? new Date(emp.created_at).toLocaleString() : ""}</td>
-//       <td>
-//         <button class="view-btn" onClick="openViewModal('${employeeIDFormat(emp.id)}')">View</button>
-//         <button class="edit-btn" onClick="openEditModal('${employeeIDFormat(emp.id)}')">Edit</button>
-//         <button class="delete-btn" onClick="openDeleteModal('${employeeIDFormat(emp.id)}')">Delete</button>
-//       </td>
-//     `;
-//     tbody.appendChild(tr);
-//   }
-// }
 
 // Keep track of the current page globally or pass it into your main setup
 const empPageNumber = document.getElementById("emp-page-numbers");
