@@ -31,6 +31,7 @@ function formatRefID(refID) {
   const prefix = 'REF' + (refIDStr.length < 12 ? '0'.repeat(12 - refIDStr.length) : '');
   return prefix + refIDStr;
 }
+
 const transacPagenumber = document.getElementById("transaction-page-numbers");
 let currentTransactionPage = 1;
 const TRANSACTION_PAGE_SIZE = 20;
@@ -53,7 +54,6 @@ export async function getFilteredTransactions(
 
   let transactionTypeIds = [];
 
-
   if (type === "deposit") {
     transactionTypeIds = [3, 4]; // cash deposit, check deposit
   } else if (type === "withdrawal") {
@@ -64,13 +64,18 @@ export async function getFilteredTransactions(
     transactionTypeIds = [await getTransactionTypeId(type)];
   }
 
-
   const from = (page - 1) * TRANSACTION_PAGE_SIZE;
   const to = from + TRANSACTION_PAGE_SIZE - 1;
 
   let query = sb
     .from("bank_transaction")
-    .select("*", { count: "exact" })
+    .select(`
+      *,
+      employees (
+        first_name,
+        last_name
+      )
+    `, { count: "exact" })
     .order("date_time", { ascending: false });
 
   if (transactionTypeIds.length > 0) {
@@ -86,13 +91,11 @@ export async function getFilteredTransactions(
     } else {
       query = query.ilike("acc_name", `%${keyword}%`);
     }
-
   }
 
   // Date range
   if (startDate) {
     query = query.gte("date_time", `${startDate}T00:00:00`);
-    
   }
 
   if (endDate) {
@@ -117,6 +120,9 @@ export async function getFilteredTransactions(
   tbody.innerHTML = "";
 
   for (const transaction of data ?? []) {
+    const emp = transaction.employees;
+    const employeeName = emp ? `${emp.first_name} ${emp.last_name}`.trim() : "System / Unknown";
+
     const tr = document.createElement("tr");
 
     tr.innerHTML = `
@@ -130,7 +136,7 @@ export async function getFilteredTransactions(
         ? new Date(transaction.date_time).toLocaleString()
         : ""}
       </td>
-      <td>${await getEmployeeNameById(transaction.processed_by) ?? ""}</td>
+      <td>${employeeName}</td>
       <td>${currencyFormat(transaction.amount ?? 0)}</td>
     `;
 
