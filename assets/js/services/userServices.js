@@ -27,4 +27,3 @@ export const updatePassword = async (currentPassword, newPassword, confirmPasswo
 
     return { success: true, message: 'Password updated successfully.' };
 };
-

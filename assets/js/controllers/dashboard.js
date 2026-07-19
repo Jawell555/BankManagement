@@ -1101,6 +1101,48 @@ document.getElementById('transaction-filter-btn').addEventListener('click', asyn
 });
 
 //change password
+
+document.querySelector('[data-content="account-profile"]').addEventListener("click", async () => {
+  await initializeAccountProfile();
+});
+
+async function initializeAccountProfile() {
+  const employeeProfile = await getEmployeeByID(employeeIDFormat(await profile.id));
+  console.log("Employee Profile Data:", employeeProfile);
+  if (!employeeProfile) {
+    console.error("Error fetching employee profile data.");
+    return;
+  }
+  const profileId = document.getElementById("profile-employee-id");
+  const profileFullName = document.getElementById("profile-employee-name");
+  const profileBirth = document.getElementById("profile-employee-birth");
+  const profileGender = document.getElementById("profile-employee-gender");
+  const profileMarital = document.getElementById("profile-employee-marital");
+  const profileEmail = document.getElementById("profile-employee-email");
+  const profileContact = document.getElementById("profile-employee-contact");
+
+  const profilePostal = document.getElementById("profile-employee-postal");
+  const profileAddress = document.getElementById("profile-employee-address");
+  const profileCity = document.getElementById("profile-employee-city");
+
+  profileId.value = employeeIDFormat(employeeProfile.id);
+  profileFullName.value = `${employeeProfile.first_name} ${employeeProfile.last_name}`;
+  profileBirth.value = employeeProfile.date_birth;
+  const [genderDesc, maritalDesc] = await Promise.all([
+    getGenderDesc(employeeProfile.gender),
+    getMaritalStatusDesc(employeeProfile.marital_status)
+  ]);
+  profileGender.value = genderDesc;
+  profileMarital.value = maritalDesc;
+  profileEmail.value = employeeProfile.email;
+  profileContact.value = employeeProfile.contact_no;
+  profilePostal.value = employeeProfile.postal_code;
+  profileAddress.value = employeeProfile.home;
+  profileCity.value = employeeProfile.city;
+}
+
+
+
 import { updatePassword, closeModal } from '../services/userServices.js';
 
 const changePasswordBtn = document.getElementById("change-password-btn");
