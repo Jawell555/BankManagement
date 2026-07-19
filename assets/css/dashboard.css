@@ -12,7 +12,7 @@ body {
 /* Shared */
 .window {
     display: flex;
-    height: 100vh;
+    height: 100dvh;
 }
 
 .topbar .title {
@@ -58,10 +58,9 @@ body {
 .sidebar {
     position: fixed;
     left: 0;
-    top: 0;
+    top: 60px;
     width: 250px;
-    margin-top: 60px;
-    height: calc(100vh - 60px);
+    height: calc(100dvh - 60px);
     background-color: #031B42;
     color: #fff;
     display: flex;
@@ -166,14 +165,14 @@ body {
 
 .content.active {
     display: block;
-    height: calc(100vh - 60px);
+    height: calc(100dvh - 60px);
 }
 
 /* Dashboard */
 #dashboard {
     padding: 10px;
     flex: 1;
-    height: calc(100vh - 60px);
+    height: calc(100dvh - 60px);
 }
 
 .dashboard-widgets {
@@ -214,7 +213,7 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 1rem;
     margin: 20px 50px;
-    height: calc(100vh - 475px);
+    height: calc(100dvh - 475px);
 }
 
 .info-table table {
@@ -381,7 +380,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 1rem;
-    height: calc(100vh - 265px);
+    height: calc(100dvh - 265px);
 }
 
 .employee-table table,
